@@ -136,7 +136,7 @@ Module.register("MMM-FreeboxTV", {
         if (this.config.localPlayer === "omxplayer") {
           this.sendSocketNotification("PLAY_OMXSTREAM", omxPayload)
         } else if (this.config.localPlayer === "vlc") {
-          this.sendSocketNotification("PLAY_VLCSTREAM", omxPayload)
+          this.sendSocketNotification("PLAY_VLCSTREAM", payload)
         }
         this.FreeboxTV.playing = true
         this.FreeboxTV.channel = channel

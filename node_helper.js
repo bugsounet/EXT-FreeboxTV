@@ -9,6 +9,7 @@ const path = require("path");
 const child_process = require('child_process');
 const environ = Object.assign(process.env, { DISPLAY: ":0" });
 const pm2 = require('pm2');
+var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
 
@@ -31,99 +32,101 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'CONFIG') {
       console.log("config")
-      this.config = payload;
-      this.sendSocketNotification("STARTED");
+      this.config = payload
+      if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
+      this.sendSocketNotification("STARTED")
+      log("Started")
     }
     if (notification === "PLAY_OMXSTREAM") {
-      this.getOmxplayer(payload);
+      this.getOmxplayer(payload)
     }
     if (notification === "STOP_OMXSTREAM") {
-      this.stopOmxplayer(payload);
+      this.stopOmxplayer(payload)
     }
     if (notification === "STOP_ALL_OMXSTREAMS") {
       if (Object.keys(this.omxStream).length > 0) {
-        this.stopAllOmxplayers();
+        this.stopAllOmxplayers()
       }
     }
     if (notification === "PLAY_VLCSTREAM") {
-      this.getVlcPlayer(payload);
+      this.getVlcPlayer(payload)
     }
     if (notification === "STOP_VLCSTREAM") {
-      this.stopVlcPlayer();
+      this.stopVlcPlayer()
     }
   },
 
   start: function() {
-      this.started = false;
-      this.stopAllOmxplayers();
+    this.started = false
+    this.stopAllOmxplayers()
   },
 
   stop: function() {
-    console.log("Arret des flux de MMM-FreeboxTV... " + this.config.localPlayer);
+    log("Arrêt du flux de MMM-FreeboxTV... " + this.config.localPlayer)
 
     // Kill any running OMX Streams
     if (this.config.localPlayer === "omxplayer") {
-      child_process.spawn(path.resolve(__dirname + '/scripts/onexit.js'), { stdio: 'ignore', detached: true });
+      child_process.spawn(path.resolve(__dirname + '/scripts/onexit.js'), { stdio: 'ignore', detached: true })
     }
 
     // Kill any VLC Streams that are open
     if (this.config.localPlayer === "vlc") {
       if (this.dp2) {
-        console.log("Killing DevilsPie2...");
-        this.dp2.stderr.removeAllListeners();
-        this.dp2.kill();
-        this.dp2 = undefined;
+        log("Killing DevilsPie2...")
+        this.dp2.stderr.removeAllListeners()
+        this.dp2.kill()
+        this.dp2 = undefined
       }
-      this.stopVlcPlayer();
+      this.stopVlcPlayer()
     }
   },
 
   getVlcPlayer: function(payload) {
-    var opts = { detached: false, env: environ, stdio: ['ignore', 'ignore', 'pipe'] };
-    var vlcCmd = `vlc`;
-    var positions = {};
-    let dp2Check = false;
-    s = payload[0]
+    var opts = { detached: false, env: environ, stdio: ['ignore', 'ignore', 'pipe'] }
+    var vlcCmd = `cvlc`
+    var positions = {}
+    let dp2Check = false
+    var TV = payload
 
     // Abort a single delayed shutdown, if there was one.
-    if (s.name in this.vlcStream) {
+    if (TV.name in this.vlcStream) {
       console.log(this.vlcStream)
       child_process.exec(`wmctrl -r FreeboxTV -b remove,hidden && wmctrl -a FreeboxTV`, { env: environ }, (error, stdout, stderr) => {
         if (error) {
-          console.error(`exec error: ${error}`);
-          return;
+          console.error(`exec error: ${error}`)
+          return
         }
-      });
-      return;
+      })
+      return
     } else {
-      if (!this.FreeboxTV[s.name]) return console.log ("Error not find:", s.name)
+      if (!this.FreeboxTV[TV.name]) return log ("Chaine non trouvé:", TV.name)
       // Otherwise, Generate the VLC window
       var args = ["-I", "dummy", '--video-on-top', "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV",
-          this.FreeboxTV[s.name].url
-      ];
-      if ("fullscreen" in s && "url" in this.FreeboxTV[s.name]) {
+          this.FreeboxTV[TV.name].url
+      ]
+      if ("fullscreen" in TV) {
         console.log("fullscreen")
         args.pop();
-        args.push(this.FreeboxTV[s.name].url);
+        args.push(this.FreeboxTV[TV.name].url)
         args.unshift("--fullscreen")
-      } else if (!("fullscreen" in s)) {
-        args.unshift("--width", s.box.right - s.box.left, "--height", s.box.bottom - s.box.top);
-        positions[s.name] = `${s.box.left}, ${s.box.top}, ${s.box.right-s.box.left}, ${s.box.bottom-s.box.top}`;
+      } else if (!("fullscreen" in TV)) {
+        args.unshift("--width", TV.box.right - TV.box.left, "--height", TV.box.bottom - TV.box.top)
+        positions[TV.name] = `${TV.box.left}, ${TV.box.top}, ${TV.box.right-TV.box.left}, ${TV.box.bottom-TV.box.top}`
       }
-      console.log(`Starting stream ${s.name} using VLC with args ${args.join(' ')}...`);
+      log(`Démarrage de la chaine ${TV.name} (utilisation de VLC avec arguments: ${args.join(' ')}...`)
 
-      this.vlcStream.FreeboxTV = child_process.spawn(vlcCmd, args, opts);
+      this.vlcStream.FreeboxTV = child_process.spawn(vlcCmd, args, opts)
 
       this.vlcStream.FreeboxTV.on('error', (err) => {
-        console.error(`Failed to start subprocess: ${this.vlcStream.FreeboxTV}.`);
-      });
+        console.error(`Impossible de démarrer le processus: ${this.vlcStream.FreeboxTV}.`)
+      })
 
-      dp2Check = true;
+      dp2Check = true
     }
     if (!dp2Check) { return; }
-    var dp2Cmd = `devilspie2`;
-    var dp2Args = ['--debug', '-f', path.resolve(__dirname + '/scripts')];
-    let dp2Config = ``;
+    var dp2Cmd = `devilspie2`
+    var dp2Args = ['--debug', '-f', path.resolve(__dirname + '/scripts')]
+    let dp2Config = ``
     Object.keys(positions).forEach(p => {
       console.log(p)
         dp2Config += `
@@ -134,53 +137,53 @@ if (get_window_name()=="FreeboxTV") then
   make_always_on_top();
 end
 `;
-    });
+    })
 
     var startDp2 = () => {
       if (this.dp2) {
-          this.dp2.stderr.removeAllListeners();
-          this.dp2.kill();
-          this.dp2 = undefined;
+          this.dp2.stderr.removeAllListeners()
+          this.dp2.kill()
+          this.dp2 = undefined
       }
-      console.info("DP2: Running window resizers...");
-      this.dp2 = child_process.spawn(dp2Cmd, dp2Args, opts);
+      log("DP2: Running window resizers...")
+      this.dp2 = child_process.spawn(dp2Cmd, dp2Args, opts)
       this.dp2.on('error', (err) => {
-          console.error('DP2: Failed to start.');
+          console.error('DP2: Failed to start.')
       });
     };
 
     fs.readFile(path.resolve(__dirname + '/scripts/vlc.lua'), "utf8", (err, data) => {
-      if (err) throw err;
+      if (err) throw err
 
       // Only write the new DevilsPie2 config if we need to.
       if (data !== dp2Config) {
         fs.writeFile(path.resolve(__dirname + '/scripts/vlc.lua'), dp2Config, (err) => {
           // throws an error, you could also catch it here
-          if (err) throw err;
+          if (err) throw err
 
-          console.log('DP2: Config File Saved!');
-          if (this.config.debug) { console.log(dp2Config); }
-          startDp2();
+          log('DP2: Config File Saved!')
+          if (this.config.debug) { console.log(dp2Config) }
+          startDp2()
           // Give the windows time to settle, then re-call to resize again.
-          setTimeout(() => { startDp2(); }, 7000);
+          setTimeout(() => { startDp2(); }, 7000)
         });
       } else {
-        startDp2();
-        setTimeout(() => { startDp2(); }, 3000);
+        startDp2()
+        setTimeout(() => { startDp2(); }, 5000)
       }
     });
   },
 
   stopVlcPlayer: function() {
     if ("FreeboxTV" in this.vlcStream) {
-      console.log("Stopping stream");
+      log("Arrêt de la diffusion")
       try {
-        this.vlcStream.FreeboxTV.stderr.removeAllListeners();
-        this.vlcStream.FreeboxTV.kill();
+        this.vlcStream.FreeboxTV.stderr.removeAllListeners()
+        this.vlcStream.FreeboxTV.kill()
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
-      delete this.vlcStream.FreeboxTV;
+      delete this.vlcStream.FreeboxTV
     }
   },
 
