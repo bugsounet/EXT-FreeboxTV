@@ -21,10 +21,13 @@
   width: 352px; /* Video width + 2*border + 2*padding */
   height: 242px;
   border: 1px solid white;
-  /*float: left;*/
   display: inline-block;
   text-align: center;
   margin: 2px;
+  background-image: url(./resources/FreeboxTV.png);
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: 35px -7px;
 }
 
 .MMM-FreeboxTV .canvas {
@@ -40,60 +43,5 @@
     height: 100%;
 }
 
-.MMM-FreeboxTV .snapshot {
-  position: absolute;
-  z-index: 1;
-  left: 50%;
-  top: 50%;
-  /*width: 352px;
-  height: 240px;*/
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
-}
-
-/* Next and Previous arrow */
-.MMM-FreeboxTV .control {
-  z-index: 55;
-  /*opacity: 0.0;*/
-  display: inline-block;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  line-height: 50%;
-  width: 100%;
-  height: 100%;
-  vertical-align: middle;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
 
 
-/* Show button when you hover near */
-.MMM-FreeboxTV .control:hover label {
-  opacity: 0.6;
-  cursor: pointer !important;
-}
-
-.MMM-FreeboxTV .control:hover {
-  opacity: 0.6;
-  cursor: pointer !important;
-}
-
-.MMM-FreeboxTV .control label {
-  z-index: 100;
-  display: block;
-  text-align: center;
-  line-height: 50px;
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  font-size: 100px;
-  color: #FFF;
-  opacity: 0.0;
-}

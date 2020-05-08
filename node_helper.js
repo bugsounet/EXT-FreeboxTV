@@ -96,6 +96,7 @@ module.exports = NodeHelper.create({
       });
       return;
     } else {
+      if (!this.FreeboxTV[s.name]) return console.log ("Error not find:", s.name)
       // Otherwise, Generate the VLC window
       var args = ["-I", "dummy", '--video-on-top', "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV",
           this.FreeboxTV[s.name].url

@@ -7,14 +7,14 @@ Module.register("MMM-FreeboxTV", {
       debug: false,
       autoStart: false,
       localPlayer: "vlc", // "omxplayer" or "ffmpeg", or "vlc"
-      moduleWidth: 384, // Width = (Stream Width + 30px margin + 2px border) * # of Streams Wide
-      moduleHeight: 272, // Height = (Stream Height + 30px margin + 2px border) * # of Streams Tall
+      moduleWidth: 366,
+      moduleHeight: 206,
       moduleOffset: 0, // Offset to align OMX player windows
       shutdownDelay: 11, // Seconds
       TV: {
         protocol: "tcp", // 'tcp' or 'udp'
-        width: 320,
-        height: 240,
+        width: 360,
+        height: 200,
         omxRestart: 24, // Hours
       },
     },
@@ -29,8 +29,8 @@ Module.register("MMM-FreeboxTV", {
 
     start: function() {
       var self = this;
-
       this.loaded = false;
+      this.channelActive = null;
       this.sendSocketNotification('CONFIG', this.config);
       this.streams.TV = { playing: false };
     },
@@ -49,10 +49,8 @@ Module.register("MMM-FreeboxTV", {
     resumed: function(callback) {
       console.log(`${this.name} has resumed... autoStart: ${this.config.autoStart}`);
       this.suspended = false;
-      if (this.loaded) {
-        if (this.config.autoStart) {
-          this.playAll();
-        }
+      if (this.channelActive) {
+          this.notificationReceived("TV-PLAY", this.channelActive)
       }
       if (typeof callback === "function") { callback(); }
     },
@@ -68,33 +66,6 @@ Module.register("MMM-FreeboxTV", {
       options = options || {};
 
       MM.showModule(this, speed, newCallback, options);
-    },
-
-    playBtnCallback: function() {
-      var ps = [];
-      if (this.streams.TV.playing) {
-        this.stopStream();
-      } else {
-        ps = this.playStream();
-        if (this.config.localPlayer === "omxplayer") {
-          this.sendSocketNotification("PLAY_OMXSTREAM", ps);
-        } else if (this.config.localPlayer === "vlc") {
-          this.sendSocketNotification("PLAY_VLCSTREAM", ps);
-        }
-      }
-    },
-
-    playBtnDblClickCB: function() {
-      if (!this.streams.TV.playing) {
-        var ps = this.playStream(true);
-        if (this.config.localPlayer === "omxplayer") {
-          this.sendSocketNotification("PLAY_OMXSTREAM", ps);
-        } else if (this.config.localPlayer === "vlc") {
-          this.sendSocketNotification("PLAY_VLCSTREAM", ps);
-        }
-      } else {
-        this.playBtnCallback("TV");
-      }
     },
 
     getDom: function() {
@@ -116,7 +87,6 @@ Module.register("MMM-FreeboxTV", {
         wrapper.className = "MMM-FreeboxTV wrapper";
         iw = this.getInnerWrapper();
         iw.appendChild(this.getCanvas());
-        iw.appendChild(this.getPlayPauseBtn());
         wrapper.appendChild(iw);
         wrapper.appendChild(document.createElement("br"));
       }
@@ -145,65 +115,13 @@ Module.register("MMM-FreeboxTV", {
       return innerWrapper;
     },
 
-    getPlayPauseBtn: function(force_visible = false) {
-      var self = this;
-
-      function makeOnClickHandler() {
-        return function() {
-          self.playBtnCallback();
-        };
-      }
-
-      function makeOnDblClickHandler() {
-        return function() {
-          self.playBtnDblClickCB();
-        };
-      }
-
-      var playBtnWrapper = document.createElement("div");
-      playBtnWrapper.className = "control";
-      playBtnWrapper.onclick = makeOnClickHandler();
-      playBtnWrapper.oncontextmenu = makeOnDblClickHandler();
-      playBtnWrapper.id = "playBtnWrapper_TV"
-
-      var playBtnLabel = document.createElement("label");
-      playBtnLabel.id = "playBtnLabel_TV";
-      playBtnLabel.innerHTML = '<i class="fa fa-play-circle"></i>';
-      playBtnWrapper.appendChild(playBtnLabel);
-      return playBtnWrapper;
-    },
-
-    updatePlayPauseBtn(force_visible = false) {
-      var buttonId = "playBtnLabel_TV"
-      var button = document.getElementById(buttonId);
-      if (!button) {
-        // If not ready yet, retry in 1 second.
-        setTimeout(() => this.updatePlayPauseBtn(force_visible), 1000);
-        return;
-      }
-      if (this.streams.TV.playing) {
-        button.innerHTML = '<i class="fa fa-pause-circle"></i>';
-      } else {
-        button.innerHTML = '<i class="fa fa-play-circle"></i>';
-      }
-
-      if (force_visible) {
-        button.style.cssText = "opacity: 0.6;";
-        button.parentElement.style.cssText = "opacity: 1;";
-      } else {
-        button.style.cssText = '';
-        button.parentElement.style.cssText = '';
-      }
-    },
-
     playStream: function(channel,fullscreen = false) {
       var canvasId = "canvas_TV";
       var canvas = document.getElementById(canvasId);
       var omxPayload = [];
 
-      console.log(channel)
-
      if (this.streams.TV.playing) {
+       console.log("stop")
         this.stopStream();
       }
 
@@ -235,7 +153,6 @@ Module.register("MMM-FreeboxTV", {
 
       this.streams.TV.playing = true;
       this.playing = true;
-      this.updatePlayPauseBtn();
       return omxPayload;
     },
 
@@ -286,14 +203,15 @@ Module.register("MMM-FreeboxTV", {
 
       if (notification === 'TV-STOP') {
         this.stopStream();
+        this.channelActive = null
       }
 
       if (ps.length > 0) {
-        console.log(ps)
         if (this.config.localPlayer === "omxplayer") {
           this.sendSocketNotification("PLAY_OMXSTREAM", ps);
         } else if (this.config.localPlayer === "vlc") {
           this.sendSocketNotification("PLAY_VLCSTREAM", ps);
+          this.channelActive= ps[0].name
         }
       }
     },
