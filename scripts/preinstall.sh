@@ -9,7 +9,7 @@
 
 
 # Check for required Debian packages
-PACKAGE="devilspie2 wmctrl ffmpeg vlc"
+PACKAGE="devilspie2 wmctrl vlc"
 
 if [[ $(dpkg-query -W -f='${Status}\n' $PACKAGE 2>/dev/null | grep -c "ok installed") -lt 5 ]];
 then

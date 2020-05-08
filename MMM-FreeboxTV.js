@@ -11,9 +11,7 @@ Module.register("MMM-FreeboxTV", {
       moduleHeight: 272, // Height = (Stream Height + 30px margin + 2px border) * # of Streams Tall
       moduleOffset: 0, // Offset to align OMX player windows
       shutdownDelay: 11, // Seconds
-      stream1: {
-        name: 'France 2',
-        url: 'rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=sd',
+      TV: {
         protocol: "tcp", // 'tcp' or 'udp'
         width: 320,
         height: 240,
@@ -198,10 +196,12 @@ Module.register("MMM-FreeboxTV", {
       }
     },
 
-    playStream: function(fullscreen = false) {
+    playStream: function(channel,fullscreen = false) {
       var canvasId = "canvas_TV";
       var canvas = document.getElementById(canvasId);
       var omxPayload = [];
+
+      console.log(channel)
 
      if (this.streams.TV.playing) {
         this.stopStream();
@@ -210,7 +210,7 @@ Module.register("MMM-FreeboxTV", {
       if (["omxplayer", "vlc"].indexOf(this.config.localPlayer) !== -1) {
         var rect = canvas.getBoundingClientRect();
         var offset = {};
-        var payload = { name: "TV" };
+        var payload = { name: channel };
         if (typeof this.config.moduleOffset === "object") {
           offset.left = ("left" in this.config.moduleOffset) ? this.config.moduleOffset.left : 0;
           offset.top = ("top" in this.config.moduleOffset) ? this.config.moduleOffset.top : 0;
@@ -256,7 +256,7 @@ Module.register("MMM-FreeboxTV", {
         if (this.config.localPlayer === "omxplayer") {
           this.sendSocketNotification("STOP_OMXSTREAM", "TV");
         } else if (this.config.localPlayer === "vlc") {
-          this.sendSocketNotification("STOP_VLCSTREAM", { name: "TV", delay: this.config.shutdownDelay });
+          this.sendSocketNotification("STOP_VLCSTREAM");
         } else if ("player" in this.streams.TV) {
           this.streams.TV.player.destroy();
           delete this.streams.TV.player;
@@ -278,10 +278,10 @@ Module.register("MMM-FreeboxTV", {
       var ps = [];
 
       if (notification === 'TV-PLAY') {
-        ps = this.playStream();
+        ps = this.playStream(payload);
       }
       if (notification === 'TV-PLAY-FULLSCREEN') {
-        ps = this.playStream(true);
+        ps = this.playStream(payload,true);
       }
 
       if (notification === 'TV-STOP') {
@@ -289,6 +289,7 @@ Module.register("MMM-FreeboxTV", {
       }
 
       if (ps.length > 0) {
+        console.log(ps)
         if (this.config.localPlayer === "omxplayer") {
           this.sendSocketNotification("PLAY_OMXSTREAM", ps);
         } else if (this.config.localPlayer === "vlc") {
