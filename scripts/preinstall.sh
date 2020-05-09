@@ -1,15 +1,7 @@
 #!/bin/bash
-# Title         : preinstall.sh
-# Description   : This script will install some dependencies
-# Author        : shbatm
-# Date          : 2018-12-03
-# Version       : 0.0.1
-# Usage         : ./preinstall.sh
-#==============================================================================
-
 
 # Check for required Debian packages
-PACKAGE="devilspie2 wmctrl vlc"
+PACKAGE="devilspie2 wmctrl vlc" # omxplayer
 
 if [[ $(dpkg-query -W -f='${Status}\n' $PACKAGE 2>/dev/null | grep -c "ok installed") -lt 5 ]];
 then

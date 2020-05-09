@@ -4,7 +4,7 @@ Module.register("MMM-FreeboxTV", {
     defaults: {
       debug: false,
       autoReplay: true,
-      localPlayer: "vlc", // "omxplayer" or "vlc"
+      localPlayer: "omxplayer", // "omxplayer" or "vlc"
       moduleOffset: 0, // Offset to align OMX player windows
       fullcreen: false,
       width: 384,
@@ -39,9 +39,9 @@ Module.register("MMM-FreeboxTV", {
     resumed: function(callback) {
       console.log(`${this.name} has resumed... autoReplay: ${this.config.autoReplay}`)
       if (this.FreeboxTV.suspended && this.config.autoReplay) {
+          this.FreeboxTV.suspended = false;
           this.notificationReceived("TV-PLAY", this.FreeboxTV.channel)
-      }
-      this.FreeboxTV.suspended = false;
+      } else this.FreeboxTV.suspended = false;
       if (typeof callback === "function") { callback() }
     },
 
@@ -131,11 +131,10 @@ Module.register("MMM-FreeboxTV", {
           }
         }
         payload.box = box
-        omxPayload.push(payload)
 
-        if (this.config.localPlayer === "omxplayer") {
-          this.sendSocketNotification("PLAY_OMXSTREAM", omxPayload)
-        } else if (this.config.localPlayer === "vlc") {
+        if (this.config.localPlayer === "omxplayer" && !this.FreeboxTV.suspended) {
+          this.sendSocketNotification("PLAY_OMXSTREAM", payload)
+        } else if (this.config.localPlayer === "vlc" && !this.FreeboxTV.suspended) {
           this.sendSocketNotification("PLAY_VLCSTREAM", payload)
         }
         this.FreeboxTV.playing = true
@@ -143,7 +142,12 @@ Module.register("MMM-FreeboxTV", {
       }
     },
 
-    stopStream: function() {
+    stopStream: function(force) {
+      if (force) {
+        this.FreeboxTV.playing = false
+        this.FreeboxTV.channel = null
+        this.FreeboxTV.suspended = false
+      }
       if (this.FreeboxTV.playing) {
         if (this.config.localPlayer === "omxplayer") {
           this.sendSocketNotification("STOP_OMXSTREAM")
@@ -157,7 +161,7 @@ Module.register("MMM-FreeboxTV", {
     },
 
     getStyles: function() {
-      return ["MMM-FreeboxTV.css", "font-awesome.css"]
+      return ["MMM-FreeboxTV.css"]
     },
 
     notificationReceived: function(notification, payload, sender) {
@@ -165,7 +169,7 @@ Module.register("MMM-FreeboxTV", {
         this.playStream(payload,this.config.fullscreen)
       }
       if (notification === 'TV-STOP') {
-        this.stopStream()
+        this.stopStream(true)
       }
     },
     
