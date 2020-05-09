@@ -17,26 +17,59 @@ module.exports = NodeHelper.create({
   omxStreamTimeouts: {},
 
   vlcStream: {},
-  vlcStreamTimeouts: {},
   FreeboxTV: {
-    "france2": {
-      url: 'rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=sd',
-      urlHD: 'rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=hd'
-    },
-    "france3": {
-      url : "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=202&flavour=sd",
-      urlHD: "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=202&flavour=hd"
-    }
+    "2": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=sd",
+    "3": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=202&flavour=sd",
+    "5": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=203&flavour=sd",
+    "7": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=204&flavour=sd",
+    "8": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=372&flavour=sd",
+    "12": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=375&flavour=ld",
+    "13": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=226&flavour=sd",
+    "14": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=376&flavour=sd",
+    "15": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=400&flavour=sd",
+    "16": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=679&flavour=sd",
+    "17": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=678&flavour=sd",
+    "18": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=677", // full screen only
+    "19": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=238&flavour=sd",
+    "21": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=994&flavour=ld",
+    "23": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=996&flavour=ld",
+    "24": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=997&flavour=ld",
+    "25": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=998&flavour=ld",
+    "27": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1173&flavour=ld",
+    "28": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=213&flavour=ld",
+    "29": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=210&flavour=ld",
+    "47": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1426&flavour=ld",
+    "50": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=220&flavour=sd",
+    "51": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=211&flavour=ld",
+    "52": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1050&flavour=ld",
+    "53": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=404&flavour=ld",
+    "64": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=430&flavour=ld",
+    "70": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=206&flavour=sd",
+    "87": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=621&flavour=sd",
+    "89": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=979&flavour=ld",
+    "90": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=253&flavour=ld",
+    "91": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1309&flavour=ld",
+    "94": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1045&flavour=ld",
+    "95": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=813&flavour=sd",
+    "96": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=618&flavour=sd",
+    "97": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1318&flavour=ld",
+    "99": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1135&flavour=ld"
   },
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'CONFIG') {
-      console.log("config")
       this.config = payload
       if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
       this.sendSocketNotification("STARTED")
       log("Started")
     }
+    if (notification === "PLAY_VLCSTREAM") {
+      this.getVlcPlayer(payload)
+    }
+    if (notification === "STOP_VLCSTREAM") {
+      this.stopVlcPlayer()
+    }
+    /** to do
     if (notification === "PLAY_OMXSTREAM") {
       this.getOmxplayer(payload)
     }
@@ -48,21 +81,15 @@ module.exports = NodeHelper.create({
         this.stopAllOmxplayers()
       }
     }
-    if (notification === "PLAY_VLCSTREAM") {
-      this.getVlcPlayer(payload)
-    }
-    if (notification === "STOP_VLCSTREAM") {
-      this.stopVlcPlayer()
-    }
+    **/
   },
 
   start: function() {
-    this.started = false
-    this.stopAllOmxplayers()
+    console.log("[FreeboxTV] Starts...")
   },
 
   stop: function() {
-    log("Arrêt du flux de MMM-FreeboxTV... " + this.config.localPlayer)
+    log("Arrêt du flux TV... " + this.config.localPlayer)
 
     // Kill any running OMX Streams
     if (this.config.localPlayer === "omxplayer") {
@@ -102,12 +129,12 @@ module.exports = NodeHelper.create({
       if (!this.FreeboxTV[TV.name]) return log ("Chaine non trouvé:", TV.name)
       // Otherwise, Generate the VLC window
       var args = ["-I", "dummy", '--video-on-top', "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV",
-          this.FreeboxTV[TV.name].url
+          this.FreeboxTV[TV.name]
       ]
       if ("fullscreen" in TV) {
         console.log("fullscreen")
         args.pop();
-        args.push(this.FreeboxTV[TV.name].url)
+        args.push(this.FreeboxTV[TV.name])
         args.unshift("--fullscreen")
       } else if (!("fullscreen" in TV)) {
         args.unshift("--width", TV.box.right - TV.box.left, "--height", TV.box.bottom - TV.box.top)

@@ -4,15 +4,13 @@ Module.register("MMM-FreeboxTV", {
     defaults: {
       debug: false,
       autoReplay: true,
-      localPlayer: "vlc", // "omxplayer" or "ffmpeg", or "vlc"
-      moduleWidth: 366,
-      moduleHeight: 206,
+      localPlayer: "vlc", // "omxplayer" or "vlc"
       moduleOffset: 0, // Offset to align OMX player windows
       fullcreen: false,
+      width: 384,
+      height: 216,
       TV: {
         protocol: "tcp", // 'tcp' or 'udp'
-        width: 360,
-        height: 200,
         omxRestart: 24, // Hours
       },
     },
@@ -25,6 +23,8 @@ Module.register("MMM-FreeboxTV", {
         channel: null,
         suspended: false,
       }
+      this.moduleWidth= this.config.width + 6
+      this.moduleHeight= this.config.height + 6
     },
 
     /* suspend()
@@ -67,7 +67,7 @@ Module.register("MMM-FreeboxTV", {
         return wrapper
       }
 
-      wrapper.style.cssText = `width: ${this.config.moduleWidth}px; height:${this.config.moduleHeight}px`
+      wrapper.style.cssText = `width: ${this.moduleWidth}px; height:${this.moduleHeight}px`
       wrapper.className = "MMM-FreeboxTV wrapper"
       iw = this.getInnerWrapper()
       iw.appendChild(this.getCanvas())
@@ -94,7 +94,7 @@ Module.register("MMM-FreeboxTV", {
     getInnerWrapper: function() {
       var innerWrapper = document.createElement("div")
       innerWrapper.className = "MMM-FreeboxTV innerWrapper"
-      innerWrapper.style.cssText = this.getCanvasSize(this.config.TV)
+      innerWrapper.style.cssText = this.getCanvasSize( { "width": this.config.width, "height": this.config.height })
       innerWrapper.id = "iw_TV"
       return innerWrapper
     },
