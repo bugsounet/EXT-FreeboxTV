@@ -9,10 +9,7 @@ Module.register("MMM-FreeboxTV", {
       fullcreen: false,
       width: 384,
       height: 216,
-      TV: {
-        protocol: "tcp", // 'tcp' or 'udp'
-        omxRestart: 24, // Hours
-      },
+      protocol: "tcp", // 'tcp' or 'udp'
     },
 
     start: function() {

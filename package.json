@@ -1,18 +1,15 @@
 {
   "name": "MMM-FreeboxTV",
   "version": "1.0.0",
-  "description": "Magic Mirror 2 module to stream video",
+  "description": "Magic Mirror 2 module to stream Freebox TV",
   "main": "MMM-FreeboxTV.js",
   "author": "bugsounet",
   "license": "MIT",
   "scripts": {
     "preinstall": "./scripts/preinstall.sh"
   },
-  "dependencies": {
-    "node-rtsp-stream-es6": "github:shbatm/node-rtsp-stream-es6"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/shbatm/MMM-FreeboxTV"
+    "url": "https://github.com/bugsounet/MMM-FreeboxTV"
   }
 }
