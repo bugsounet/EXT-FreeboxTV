@@ -4,7 +4,7 @@ MMM-Freebox est un module pour le projet [MagicMirror](https://github.com/MichMi
 
 Il permet d'afficher, sur votre Mirroir, les chaines de TV de la [Freebox](https://www.free.fr/freebox/).
 
-Voici les chaines actuellement disponible:
+Voici les chaines actuellement disponibles:
 
  * France 2
  * France 3
