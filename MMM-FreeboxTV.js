@@ -35,7 +35,7 @@ Module.register("MMM-FreeboxTV", {
 
     resumed: function(callback) {
       console.log(`[FreeboxTV] ${this.name} has resumed... autoReplay: ${this.config.autoReplay}`)
-      if (this.FreeboxTV.suspended && this.config.autoReplay) {
+      if (this.FreeboxTV.suspended && this.config.autoReplay && this.FreeboxTV.channel) {
           this.FreeboxTV.suspended = false;
           this.notificationReceived("TV-PLAY", this.FreeboxTV.channel)
       } else this.FreeboxTV.suspended = false;
