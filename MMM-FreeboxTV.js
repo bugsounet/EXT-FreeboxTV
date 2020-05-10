@@ -140,12 +140,6 @@ Module.register("MMM-FreeboxTV", {
     },
 
     stopStream: function(force) {
-      if (force) {
-        this.FreeboxTV.playing = false
-        this.FreeboxTV.channel = null
-        this.FreeboxTV.suspended = false
-      }
-      this.sendSocketNotification("STOP_OMXSTREAM")
       if (this.FreeboxTV.playing) {
         if (this.config.player === "omxplayer") {
           this.sendSocketNotification("STOP_OMXSTREAM")
@@ -155,6 +149,11 @@ Module.register("MMM-FreeboxTV", {
         this.FreeboxTV.playing = false
         if (!this.FreeboxTV.suspended)
           this.FreeboxTV.channel= null
+      }
+      if (force) {
+        this.FreeboxTV.playing = false
+        this.FreeboxTV.channel = null
+        this.FreeboxTV.suspended = false
       }
     },
 
