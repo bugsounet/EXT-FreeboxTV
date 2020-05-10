@@ -72,11 +72,6 @@ module.exports = NodeHelper.create({
     if (notification === "STOP_OMXSTREAM") {
       this.stopOmxplayer(payload)
     }
-    if (notification === "STOP_ALL_OMXSTREAMS") {
-      if (Object.keys(this.omxStream).length > 0) {
-        this.stopAllOmxplayers()
-      }
-    }
   },
 
   start: function() {
@@ -84,15 +79,15 @@ module.exports = NodeHelper.create({
   },
 
   stop: function() {
-    log("Arrêt du flux TV... " + this.config.localPlayer)
+    log("Arrêt du flux TV... " + this.config.player)
 
     // Kill OMX Stream
-    if (this.config.localPlayer === "omxplayer") {
+    if (this.config.player === "omxplayer") {
       this.stopOmxplayer()
     }
 
     // Kill VLC Stream
-    if (this.config.localPlayer === "vlc") {
+    if (this.config.player === "vlc") {
       if (this.dp2) {
         log("Killing DevilsPie2...")
         this.dp2.stderr.removeAllListeners()
@@ -111,39 +106,30 @@ module.exports = NodeHelper.create({
     var TV = payload
     var fullscreen = false
 
-    // Abort a single delayed shutdown, if there was one.
-    if (TV.name in this.vlcStream) {
-      console.log(this.vlcStream)
-      child_process.exec(`wmctrl -r FreeboxTV -b remove,hidden && wmctrl -a FreeboxTV`, { env: environ }, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`exec error: ${error}`)
-          return
-        }
-      })
-      return
+    if (!this.FreeboxTV[TV.name]) return log ("Chaine non trouvé:", TV.name)
+    // Otherwise, Generate the VLC window
+    var args = ["-I", "dummy", '--video-on-top', "--no-video-title-show", "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV",
+        this.FreeboxTV[TV.name]
+    ]
+    if ("fullscreen" in TV) {
+      args.unshift("--fullscreen")
+      fullscreen = true
     } else {
-      if (!this.FreeboxTV[TV.name]) return log ("Chaine non trouvé:", TV.name)
-      // Otherwise, Generate the VLC window
-      var args = ["-I", "dummy", '--video-on-top', "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV",
-          this.FreeboxTV[TV.name]
-      ]
-      if ("fullscreen" in TV) {
-        args.unshift("--fullscreen")
-        fullscreen = true
-      } else {
-        args.unshift("--width", TV.box.right - TV.box.left, "--height", TV.box.bottom - TV.box.top)
-        positions = `${TV.box.left}, ${TV.box.top}, ${TV.box.right-TV.box.left}, ${TV.box.bottom-TV.box.top}`
-        dp2Check = true
-      }
-      log("Démarrage " + (fullscreen ? "plein écran " : "") + `de la chaine ${TV.name} (utilisation de VLC avec arguments: ${args.join(' ')}...`)
-
-      this.vlcStream.FreeboxTV = child_process.spawn(vlcCmd, args, opts)
-
-      this.vlcStream.FreeboxTV.on('error', (err) => {
-        console.error("Impossible de démarrer le processus vlc: " +err)
-      })
+      args.unshift("--width", TV.box.right - TV.box.left, "--height", TV.box.bottom - TV.box.top)
+      positions = `${TV.box.left}, ${TV.box.top}, ${TV.box.right-TV.box.left}, ${TV.box.bottom-TV.box.top}`
+      dp2Check = true
     }
+    log("Démarrage " + (fullscreen ? "plein écran " : "") + `de la chaine ${TV.name} (utilisation de VLC avec arguments: ${args.join(' ')}...`)
+
+    this.vlcStream.FreeboxTV = child_process.spawn(vlcCmd, args, opts)
+
+    this.vlcStream.FreeboxTV.on('error', (err) => {
+      console.error("[FreeboxTV] -VLC- Impossible de démarrer le processus: " +err)
+    })
+    this.vlcStream.FreeboxTV.on('close', (code) => console.log(code))
+
     if (!dp2Check) { return; }
+
     var dp2Cmd = `devilspie2`
     var dp2Args = ['--debug', '-f', path.resolve(__dirname + '/scripts')]
     let dp2Config =`
@@ -164,7 +150,7 @@ end
       log("DP2: Running window resizers...")
       this.dp2 = child_process.spawn(dp2Cmd, dp2Args, opts)
       this.dp2.on('error', (err) => {
-        console.error('DP2: Failed to start.')
+        console.log('[FreeboxTV] -VLC- DP2: Failed to start.')
       });
     };
 
@@ -197,22 +183,17 @@ end
         this.vlcStream.FreeboxTV.stderr.removeAllListeners()
         this.vlcStream.FreeboxTV.kill()
       } catch (err) {
-        console.log(err)
+        console.log("[FreeboxTV] -VLC- Stop crash:" + err)
       }
       delete this.vlcStream.FreeboxTV
     }
   },
 
   getOmxplayer: function(payload) {
-    console.log("OmxStart")
+    console.log("OmxStart Version")
     var fullscreen = false
     var opts = { detached: false, stdio: 'ignore' };
-
     var omxCmd = `omxplayer`;
-
-    var namesM = [];
-
-    var argsM = [];
     var TV = payload
 
     var args = ["--live", "--video_queue", "4", "--fps", "30", "--no-osd",
@@ -236,7 +217,7 @@ end
     log("Démarrage " + (fullscreen ? "plein écran " : "") + `de la chaine ${TV.name} (utilisation de omxplayer avec arguments: ${args.join(' ')}...`)
     this.omxStream.FreeboxTV = child_process.spawn(omxCmd, args, opts);
     this.omxStream.FreeboxTV.on('error', (err) => {
-      console.error("Impossible de démarrer le processus omxPlayer: " + err)
+      console.log("[FreeboxTV] -omxplayer- Impossible de démarrer le processus: " + err)
     })
   },
 
@@ -247,7 +228,7 @@ end
         this.omxStream.FreeboxTV.stderr.removeAllListeners()
         this.omxStream.FreeboxTV.kill()
       } catch (err) {
-        console.log(err)
+        console.log("[FreeboxTV] -omxplayer- Stop crash:" + err)
       }
       delete this.omxStream.FreeboxTV
     }

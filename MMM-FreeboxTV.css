@@ -8,17 +8,13 @@
   left: 50%;
   vertical-align: middle;
   text-align: center;
-  -webkit-transform: translateX(-50%); /*translateX(-30px);*/
-  transform: translateX(-50%); /* translateX(-30px);*/
-}
-
-.MMM-FreeboxTV .wrapper br {
-  clear: both;
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
 }
 
 .MMM-FreeboxTV .innerWrapper {
   position: relative;
-  width: 352px; /* Video width + 2*border + 2*padding */
+  width: 352px;
   height: 242px;
   border: 1px solid white;
   display: inline-block;
@@ -35,8 +31,6 @@
   z-index: 10;
   left: 50%;
   top: 50%;
-  /*width: 352px;
-  height: 240px;*/
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
     width: 100%;

@@ -57,9 +57,9 @@ Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
 # check dependencies
 Installer_info "Checking all dependencies..."
 if  [ "$os_name" == "raspbian" ]; then
-  dependencies=(devilspie2 wmctrl vlc omxplayer)
+  dependencies=(devilspie2 vlc omxplayer)
 else
-  dependencies=(devilspie2 wmctrl vlc)
+  dependencies=(devilspie2 vlc)
 fi
 Installer_check_dependencies
 Installer_success "All Dependencies needed are installed !"

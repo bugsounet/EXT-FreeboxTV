@@ -4,12 +4,12 @@ Module.register("MMM-FreeboxTV", {
     defaults: {
       debug: false,
       autoReplay: true,
-      localPlayer: "omxplayer", // "omxplayer" or "vlc"
-      moduleOffset: 0, // Offset to align OMX player windows
+      player: "vlc", // "omxplayer" or "vlc"
       fullcreen: false,
       width: 384,
       height: 216,
       protocol: "tcp", // 'tcp' or 'udp'
+      moduleOffset: 0, // Offset to align OMX player windows
     },
 
     start: function() {
@@ -28,13 +28,13 @@ Module.register("MMM-FreeboxTV", {
      * This method is called when a module is hidden.
      */
     suspend: function() {
-      console.log(`${this.name} is suspended...`)
+      console.log(`[FreeboxTV] ${this.name} is suspended...`)
       this.FreeboxTV.suspended = true
       this.stopStream()
     },
 
     resumed: function(callback) {
-      console.log(`${this.name} has resumed... autoReplay: ${this.config.autoReplay}`)
+      console.log(`[FreeboxTV] ${this.name} has resumed... autoReplay: ${this.config.autoReplay}`)
       if (this.FreeboxTV.suspended && this.config.autoReplay) {
           this.FreeboxTV.suspended = false;
           this.notificationReceived("TV-PLAY", this.FreeboxTV.channel)
@@ -69,7 +69,6 @@ Module.register("MMM-FreeboxTV", {
       iw = this.getInnerWrapper()
       iw.appendChild(this.getCanvas())
       wrapper.appendChild(iw)
-      wrapper.appendChild(document.createElement("br"))
 
       return wrapper
     },
@@ -105,7 +104,7 @@ Module.register("MMM-FreeboxTV", {
         this.stopStream()
       }
 
-      if (["omxplayer", "vlc"].indexOf(this.config.localPlayer) !== -1) {
+      if (["omxplayer", "vlc"].indexOf(this.config.player) !== -1) {
         var rect = canvas.getBoundingClientRect()
         var offset = {}
         var payload = { name: channel }
@@ -129,9 +128,9 @@ Module.register("MMM-FreeboxTV", {
         }
         payload.box = box
 
-        if (this.config.localPlayer === "omxplayer" && !this.FreeboxTV.suspended) {
+        if (this.config.player === "omxplayer" && !this.FreeboxTV.suspended) {
           this.sendSocketNotification("PLAY_OMXSTREAM", payload)
-        } else if (this.config.localPlayer === "vlc" && !this.FreeboxTV.suspended) {
+        } else if (this.config.player === "vlc" && !this.FreeboxTV.suspended) {
           this.sendSocketNotification("PLAY_VLCSTREAM", payload)
         }
         this.FreeboxTV.playing = true
@@ -145,10 +144,11 @@ Module.register("MMM-FreeboxTV", {
         this.FreeboxTV.channel = null
         this.FreeboxTV.suspended = false
       }
+      this.sendSocketNotification("STOP_OMXSTREAM")
       if (this.FreeboxTV.playing) {
-        if (this.config.localPlayer === "omxplayer") {
+        if (this.config.player === "omxplayer") {
           this.sendSocketNotification("STOP_OMXSTREAM")
-        } else if (this.config.localPlayer === "vlc") {
+        } else if (this.config.player === "vlc") {
           this.sendSocketNotification("STOP_VLCSTREAM")
         }
         this.FreeboxTV.playing = false
