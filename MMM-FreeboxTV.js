@@ -13,7 +13,6 @@ Module.register("MMM-FreeboxTV", {
     },
 
     start: function() {
-      this.sendSocketNotification('CONFIG', this.config)
       this.FreeboxTV = {
         loaded: false,
         playing: false,
@@ -59,13 +58,14 @@ Module.register("MMM-FreeboxTV", {
       var wrapper = document.createElement("div")
 
       if (!this.FreeboxTV.loaded) {
-        wrapper.innerHTML = "Loading " + this.name + "..."
+        wrapper.innerHTML = "Chargement " + this.name + "..."
         wrapper.className = "dimmed light small"
         return wrapper
       }
 
       wrapper.style.cssText = `width: ${this.moduleWidth}px; height:${this.moduleHeight}px`
       wrapper.className = "MMM-FreeboxTV wrapper"
+      if (this.config.fullscreen) wrapper.classList.add("hidden")
       iw = this.getInnerWrapper()
       iw.appendChild(this.getCanvas())
       wrapper.appendChild(iw)
@@ -129,7 +129,8 @@ Module.register("MMM-FreeboxTV", {
         payload.box = box
 
         if (this.config.player === "omxplayer" && !this.FreeboxTV.suspended) {
-          this.sendSocketNotification("PLAY_OMXSTREAM", payload)
+          /** to debug **/
+          //this.sendSocketNotification("PLAY_OMXSTREAM", payload)
         } else if (this.config.player === "vlc" && !this.FreeboxTV.suspended) {
           this.sendSocketNotification("PLAY_VLCSTREAM", payload)
         }
@@ -162,6 +163,9 @@ Module.register("MMM-FreeboxTV", {
     },
 
     notificationReceived: function(notification, payload, sender) {
+      if (notification == "DOM_OBJECTS_CREATED") {
+        this.sendSocketNotification('CONFIG', this.config)
+      }
       if (notification === 'TV-PLAY') {
         this.playStream(payload,this.config.fullscreen)
       }

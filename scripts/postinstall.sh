@@ -63,5 +63,9 @@ else
 fi
 Installer_check_dependencies
 Installer_success "All Dependencies needed are installed !"
+echo
+
+Installer_info "Copy recipe 'with-FreeboxTV.js' to AMk2 recipe directory"
+cp -f ../resources/with-FreeboxTV.js ../../MMM-AssistantMk2/recipes && Installer_success "Done"
 
 Installer_exit "$Installer_module is now installed !"

@@ -512,7 +512,7 @@ var recipe = {
         notification: "TV-STOP"
       },
       soundExec: {
-        chime: "open"
+        chime: "close"
       }
     },
   }
