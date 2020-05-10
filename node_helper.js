@@ -205,6 +205,7 @@ end
 
   getOmxplayer: function(payload) {
     console.log("OmxStart")
+    var fullscreen = false
     var opts = { detached: false, stdio: 'ignore' };
 
     var omxCmd = `omxplayer`;
@@ -219,6 +220,7 @@ end
     ];
     if (!("fullscreen" in TV)) {
       args.unshift("--win", `${TV.box.left},${TV.box.top},${TV.box.right},${TV.box.bottom}`);
+      fullscreen = true
     }
     if (this.config.protocol !== "udp") {
       args.unshift("--avdict", "rtsp_transport:tcp");
