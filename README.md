@@ -83,7 +83,7 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
   config: {
     debug: false,
     autoReplay: true,
-    fullcreen: false,
+    fullscreen: false,
     width: 384,
     height: 216,
     },
