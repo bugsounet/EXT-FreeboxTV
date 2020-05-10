@@ -34,22 +34,17 @@ module.exports = NodeHelper.create({
     "27": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1173&flavour=ld",
     "28": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=213&flavour=ld",
     "29": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=210&flavour=ld",
-    "47": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1426&flavour=ld",
     "50": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=220&flavour=sd",
     "51": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=211&flavour=ld",
-    "52": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1050&flavour=ld",
     "53": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=404&flavour=ld",
     "64": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=430&flavour=ld",
-    "70": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=206&flavour=sd",
     "87": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=621&flavour=sd",
-    "89": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=979&flavour=ld",
     "90": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=253&flavour=ld",
-    "91": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1309&flavour=ld",
-    "94": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1045&flavour=ld",
-    "95": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=813&flavour=sd",
-    "96": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=618&flavour=sd",
-    "97": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1318&flavour=ld",
-    "99": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1135&flavour=ld"
+    "176": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=212&flavour=sd",
+    "180": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=222&flavour=ld",
+    "261": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=623&flavour=sd",
+    "271": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=622&flavour=sd",
+    "347": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=897&flavour=ld"
   },
 
   socketNotificationReceived: function(notification, payload) {
