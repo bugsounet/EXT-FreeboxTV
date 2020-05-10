@@ -6,7 +6,7 @@
   "author": "bugsounet",
   "license": "MIT",
   "scripts": {
-    "preinstall": "./scripts/preinstall.sh"
+    "preinstall": "./scripts/postinstall.sh"
   },
   "repository": {
     "type": "git",
