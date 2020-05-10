@@ -39,7 +39,7 @@ Voici les chaines actuellement disponibles:
  * BFM Business
 
 ## Screenshoot
-![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screen.png)
+![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screenshoot.jpg)
 
 ## Exigence
  * Ce module necessite MMM-AssistantMk2 afin de transmettre l'ordre de changement de chaine 
