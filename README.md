@@ -78,8 +78,8 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
 
 ```js
 {
-  module: 'MMM-Freebox',
-  position: 'top_center',
+  module: 'MMM-FreeboxTV',
+  position: 'top_left',
   config: {
     debug: false,
     autoReplay: true,
