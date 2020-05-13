@@ -14,7 +14,6 @@ Module.register("MMM-FreeboxTV", {
 
     start: function() {
       this.FreeboxTV = {
-        loaded: false,
         playing: false,
         channel: null,
         suspended: false,
@@ -56,12 +55,6 @@ Module.register("MMM-FreeboxTV", {
 
     getDom: function() {
       var wrapper = document.createElement("div")
-
-      if (!this.FreeboxTV.loaded) {
-        wrapper.innerHTML = "Chargement " + this.name + "..."
-        wrapper.className = "dimmed light small"
-        return wrapper
-      }
 
       wrapper.style.cssText = `width: ${this.moduleWidth}px; height:${this.moduleHeight}px`
       wrapper.className = "MMM-FreeboxTV wrapper"
@@ -172,13 +165,4 @@ Module.register("MMM-FreeboxTV", {
         this.stopStream(true)
       }
     },
-    
-    socketNotificationReceived: function(notification, payload) {
-      if (notification === "STARTED") {
-        if (!this.FreeboxTV.loaded) {
-          this.FreeboxTV.loaded = true
-          this.updateDom(1000)
-        }
-      }
-    }
 });
