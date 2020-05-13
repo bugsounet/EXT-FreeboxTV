@@ -41,8 +41,12 @@ Voici les chaines actuellement disponibles:
 ## Screenshoot
 ![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screenshoot.jpg)
 
+## Mise à jour
+ * v1.0.1 (13-05-2020)
+   * Affiche directement le module au démarrage
+
 ## Exigence
- * Ce module necessite MMM-AssistantMk2 afin de transmettre l'ordre de changement de chaine 
+ * Ce module necessite MMM-AssistantMk2 afin de transmettre l'ordre de changement de chaine
 
 ## Installation
  * Clonez le module dans votre dossier de module de MagicMirror et exécutez `npm install` dans le répertoire du module.

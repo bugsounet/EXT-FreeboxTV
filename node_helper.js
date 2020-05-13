@@ -55,7 +55,6 @@ module.exports = NodeHelper.create({
       this.config = payload
       if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
       console.log("[FreeboxTV] FreeboxTV is initialized.")
-      this.sendSocketNotification("STARTED")
     }
     if (notification === "PLAY_VLCSTREAM") {
       this.getVlcPlayer(payload)
