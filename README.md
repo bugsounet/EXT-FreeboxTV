@@ -42,6 +42,8 @@ Voici les chaines actuellement disponibles:
 ![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screenshoot.jpg)
 
 ## Mise à jour
+ * v1.0.2 (14-05-2020)
+   * Arrête le `timer screen` de A2D si une chaine est affichée.
  * v1.0.1 (13-05-2020)
    * Affiche directement le module au démarrage
 
