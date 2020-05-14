@@ -127,6 +127,7 @@ Module.register("MMM-FreeboxTV", {
         } else if (this.config.player === "vlc" && !this.FreeboxTV.suspended) {
           this.sendSocketNotification("PLAY_VLCSTREAM", payload)
         }
+        this.sendNotification("A2D_LOCK")
         this.FreeboxTV.playing = true
         this.FreeboxTV.channel = channel
       }
@@ -139,6 +140,7 @@ Module.register("MMM-FreeboxTV", {
         } else if (this.config.player === "vlc") {
           this.sendSocketNotification("STOP_VLCSTREAM")
         }
+        this.sendNotification("A2D_UNLOCK")
         this.FreeboxTV.playing = false
         if (!this.FreeboxTV.suspended)
           this.FreeboxTV.channel= null
