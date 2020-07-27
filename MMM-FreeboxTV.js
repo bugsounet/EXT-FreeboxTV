@@ -4,19 +4,17 @@ Module.register("MMM-FreeboxTV", {
     defaults: {
       debug: false,
       autoReplay: true,
-      player: "vlc", // "omxplayer" or "vlc"
       fullcreen: false,
       width: 384,
       height: 216,
-      protocol: "tcp", // 'tcp' or 'udp'
-      moduleOffset: 0, // Offset to align OMX player windows
+      moduleOffset: 0 // Offset to align OMX player windows
     },
 
     start: function() {
       this.FreeboxTV = {
         playing: false,
         channel: null,
-        suspended: false,
+        suspended: false
       }
       this.moduleWidth= this.config.width + 6
       this.moduleHeight= this.config.height + 6
@@ -34,9 +32,9 @@ Module.register("MMM-FreeboxTV", {
     resumed: function(callback) {
       console.log(`[FreeboxTV] ${this.name} has resumed... autoReplay: ${this.config.autoReplay}`)
       if (this.FreeboxTV.suspended && this.config.autoReplay && this.FreeboxTV.channel) {
-          this.FreeboxTV.suspended = false;
+          this.FreeboxTV.suspended = false
           this.notificationReceived("TV-PLAY", this.FreeboxTV.channel)
-      } else this.FreeboxTV.suspended = false;
+      } else this.FreeboxTV.suspended = false
       if (typeof callback === "function") { callback() }
     },
 
@@ -91,55 +89,45 @@ Module.register("MMM-FreeboxTV", {
     playStream: function(channel,fullscreen = false) {
       var canvasId = "canvas_TV"
       var canvas = document.getElementById(canvasId)
-      var omxPayload = []
 
       if (this.FreeboxTV.playing) {
         this.stopStream()
       }
 
-      if (["omxplayer", "vlc"].indexOf(this.config.player) !== -1) {
-        var rect = canvas.getBoundingClientRect()
-        var offset = {}
-        var payload = { name: channel }
-        if (typeof this.config.moduleOffset === "object") {
-          offset.left = ("left" in this.config.moduleOffset) ? this.config.moduleOffset.left : 0
-          offset.top = ("top" in this.config.moduleOffset) ? this.config.moduleOffset.top : 0
-        } else {
-          offset.left = this.config.moduleOffset
-          offset.top = this.config.moduleOffset
-        }
-        var box = {};
-        if (fullscreen) {
-          payload.fullscreen = true
-        } else {
-          box = {
-            top: Math.round(rect.top + offset.top), // Compensate for Margins
-            right: Math.round(rect.right + offset.left), // Compensate for Margins
-            bottom: Math.round(rect.bottom + offset.top), // Compensate for Margins
-            left: Math.round(rect.left + offset.left) // Compensate for Margins
-          }
-        }
-        payload.box = box
-
-        if (this.config.player === "omxplayer" && !this.FreeboxTV.suspended) {
-          /** to debug **/
-          //this.sendSocketNotification("PLAY_OMXSTREAM", payload)
-        } else if (this.config.player === "vlc" && !this.FreeboxTV.suspended) {
-          this.sendSocketNotification("PLAY_VLCSTREAM", payload)
-        }
-        this.sendNotification("A2D_LOCK")
-        this.FreeboxTV.playing = true
-        this.FreeboxTV.channel = channel
+      var rect = canvas.getBoundingClientRect()
+      var offset = {}
+      var payload = { name: channel }
+      if (typeof this.config.moduleOffset === "object") {
+        offset.left = ("left" in this.config.moduleOffset) ? this.config.moduleOffset.left : 0
+        offset.top = ("top" in this.config.moduleOffset) ? this.config.moduleOffset.top : 0
+      } else {
+        offset.left = this.config.moduleOffset
+        offset.top = this.config.moduleOffset
       }
+      var box = {};
+      if (fullscreen) {
+        payload.fullscreen = true
+      } else {
+        box = {
+          top: Math.round(rect.top + offset.top), // Compensate for Margins
+          right: Math.round(rect.right + offset.left), // Compensate for Margins
+          bottom: Math.round(rect.bottom + offset.top), // Compensate for Margins
+          left: Math.round(rect.left + offset.left) // Compensate for Margins
+        }
+      }
+      payload.box = box
+
+      if (!this.FreeboxTV.suspended) {
+        this.sendSocketNotification("PLAY", payload)
+      }
+      this.sendNotification("A2D_LOCK")
+      this.FreeboxTV.playing = true
+      this.FreeboxTV.channel = channel
     },
 
     stopStream: function(force) {
       if (this.FreeboxTV.playing) {
-        if (this.config.player === "omxplayer") {
-          this.sendSocketNotification("STOP_OMXSTREAM")
-        } else if (this.config.player === "vlc") {
-          this.sendSocketNotification("STOP_VLCSTREAM")
-        }
+        this.sendSocketNotification("STOP")
         this.sendNotification("A2D_UNLOCK")
         this.FreeboxTV.playing = false
         if (!this.FreeboxTV.suspended)
@@ -166,5 +154,5 @@ Module.register("MMM-FreeboxTV", {
       if (notification === 'TV-STOP') {
         this.stopStream(true)
       }
-    },
+    }
 });

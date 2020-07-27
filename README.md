@@ -42,6 +42,8 @@ Voici les chaines actuellement disponibles:
 ![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screenshoot.jpg)
 
 ## Mise à jour
+ * V1.1.0 (27-07-2020)
+   * Mise a jour vers GoogleAssistant et simplifications de code
  * v1.0.2 (14-05-2020)
    * Arrête le `timer screen` de A2D si une chaine est affichée.
  * v1.0.1 (13-05-2020)
@@ -58,11 +60,11 @@ cd MMM-FreeboxTV
 npm install
 ```
 
- * Ajouter le recipe `with-FreeboxTV.js` dans la configuration du module de MMM-AssistantMk2
+ * Ajouter le recipe `with-FreeboxTV.js` dans la configuration du module de MMM-GoogleAssistant
  
 ```js
 {
-  module: "MMM-AssistantMk2",
+  module: "MMM-GoogleAssistant",
   position: "fullscreen_above",
   config: {
   ...
