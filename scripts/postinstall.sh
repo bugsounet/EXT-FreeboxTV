@@ -29,7 +29,7 @@ Installer_module="MMM-FreeboxTV"
 Installer_version="$(cat ../package.json | grep version | cut -c15-19 2>/dev/null)"
 
 # Let's start !
-Installer_info "Welcome to $Installer_module $Installer_version"
+Installer_info "Welcome to $Installer_module v$Installer_version"
 
 echo
 
@@ -56,16 +56,13 @@ Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
 
 # check dependencies
 Installer_info "Checking all dependencies..."
-if  [ "$os_name" == "raspbian" ]; then
-  dependencies=(devilspie2 vlc omxplayer)
-else
-  dependencies=(devilspie2 vlc)
-fi
+dependencies=(devilspie2 vlc)
+
 Installer_check_dependencies
 Installer_success "All Dependencies needed are installed !"
 echo
 
-Installer_info "Copy recipe 'with-FreeboxTV.js' to AMk2 recipe directory"
-cp -f ../resources/with-FreeboxTV.js ../../MMM-AssistantMk2/recipes && Installer_success "Done"
+Installer_info "Copy recipe 'with-FreeboxTV.js' to MMM-GoogleAssistant recipe directory"
+cp -f ../resources/with-FreeboxTV.js ../../MMM-GoogleAssistant/recipes && Installer_success "Done"
 
 Installer_exit "$Installer_module is now installed !"
