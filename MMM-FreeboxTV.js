@@ -7,7 +7,10 @@ Module.register("MMM-FreeboxTV", {
       fullcreen: false,
       width: 384,
       height: 216,
-      moduleOffset: 0 // Offset to align OMX player windows
+      moduleOffset: 0,
+      onStart: null,
+      onStartDelay: 10000,
+      streams: "streamsConfig.json"
     },
 
     start: function() {
@@ -18,6 +21,7 @@ Module.register("MMM-FreeboxTV", {
       }
       this.moduleWidth= this.config.width + 6
       this.moduleHeight= this.config.height + 6
+      this.Channels = {}
     },
 
     /* suspend()
@@ -144,15 +148,55 @@ Module.register("MMM-FreeboxTV", {
       return ["MMM-FreeboxTV.css"]
     },
 
-    notificationReceived: function(notification, payload, sender) {
-      if (notification == "DOM_OBJECTS_CREATED") {
-        this.sendSocketNotification('CONFIG', this.config)
+    notificationReceived: function(notification, payload) {
+      switch(notification) {
+        case "DOM_OBJECTS_CREATED":
+          this.sendSocketNotification("CONFIG", this.config)
+          break
+        case "TV-PLAY":
+          this.playStream(payload,this.config.fullscreen)
+          break
+        case "TV-STOP":
+          this.stopStream(true)
+          break
       }
-      if (notification === 'TV-PLAY') {
-        this.playStream(payload,this.config.fullscreen)
+    },
+
+    socketNotificationReceived: function(notification, payload) {
+      if (notification == "INITIALIZED") {
+        this.Channels = payload
+        if (this.config.onStart) {
+          if (this.ChannelsCheck(this.config.onStart)) {
+            console.log("[FreeboxTV] onStart: Lancemement de la chaine " + this.config.onStart + " dans " + this.config.onStartDelay / 1000 + " Sec")
+            setTimeout(() => this.playStream(this.config.onStart,this.config.fullscreen), this.config.onStartDelay)
+          }
+          else console.log("[FreeboxTV] onStart: Chaine non trouvé", this.config.onStart)
+        }
       }
-      if (notification === 'TV-STOP') {
-        this.stopStream(true)
+    },
+
+    /** Telegram Addon **/
+    getCommands: function(commander) {
+      commander.add({
+        command: "TV",
+        description: "Lance un chaine de FreeboxTV",
+        callback: "TV"
+      })
+    },
+
+    TV: function(command, handler) {
+      if (handler.args) {
+        if (this.ChannelsCheck(handler.args)) {
+          this.playStream(handler.args,this.config.fullscreen)
+          return handler.reply("TEXT", "J'affiche la chaine: " + handler.args)
+        } else return handler.reply("TEXT", "Chaine non trouvé: " + handler.args)
       }
+      this.stopStream(true)
+      handler.reply("TEXT", "J'éteins la TV")
+    },
+
+    ChannelsCheck: function (channel) {
+      if (this.Channels.hasOwnProperty(channel)) return true
+      return false
     }
 });
