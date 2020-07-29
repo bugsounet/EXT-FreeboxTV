@@ -102,7 +102,8 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
     width: 384,
     height: 216,
     onStart: null,
-    onStartDelay: 10000
+    onStartDelay: 10000,
+    streams: "streamsConfig.json"
   }
 },
 ```
@@ -115,7 +116,9 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
 | width | Largeur de la fenetre d'affichage en px | Nombre | 384 |
 | height | Hauteur de la fentre d'affichage en px | Nombre | 216 |
 | onStart | Numéro de chaine a lancer au démarrage ou null pour desactiver | Nombre | null |
-| onStartDelay | delai du démarrage automatique en ms (utile: permet le chargement de tous les modules) | Nombre | 10000 |
+| onStartDelay | Delai du démarrage automatique en ms (utile: permet le chargement de tous les modules) | Nombre | 10000 |
+| streams | Nom du fichier contenant les streams des chaines (format JSON) | STRING | streamsConfig.json |
+
 ## Demander un changement de chaine
 Activer votre assistant avec votre mot clé préféré et dites `TV <nom de la chaine>`<br>
 exemple: `Jarvis ... TV France 2`

@@ -19,8 +19,8 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'CONFIG') {
       console.log("[FreeboxTV] MMM-FreeboxTV Version:",  require('./package.json').version)
-      this.scanStreamsConfig()
       this.config = payload
+      this.scanStreamsConfig()
       if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
       console.log("[FreeboxTV] FreeboxTV is initialized.")
       this.sendSocketNotification("INITIALIZED", this.FreeboxTV)
@@ -138,15 +138,15 @@ end
   },
 
   scanStreamsConfig: function() {
-    console.log("[FreeboxTV] Reading streamsConfig.json...")
-    let file = path.resolve(__dirname, "streamsConfig.json")
+    console.log("[FreeboxTV] Reading:", this.config.streams)
+    let file = path.resolve(__dirname, this.config.streams)
     if (fs.existsSync(file)) {
       try {
         this.FreeboxTV = JSON.parse(fs.readFileSync(file))
         console.log("[FreeboxTV] Number of channels found:", Object.keys(this.FreeboxTV).length)
       } catch (e) {
-        return console.log("[FreeboxTV] ERROR: streamsConfig.json", e.name)
+        return console.log("[FreeboxTV] ERROR: " + this.config.streams, e.name)
       }
-    } else console.log("[FreeboxTV] ERROR: missing streamsConfig.json configuration file!")
+    } else console.log("[FreeboxTV] ERROR: missing " + this.config.streams + " configuration file!")
   }
 });

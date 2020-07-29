@@ -9,7 +9,8 @@ Module.register("MMM-FreeboxTV", {
       height: 216,
       moduleOffset: 0,
       onStart: null,
-      onStartDelay: 10000
+      onStartDelay: 10000,
+      streams: "streamsConfig.json"
     },
 
     start: function() {
