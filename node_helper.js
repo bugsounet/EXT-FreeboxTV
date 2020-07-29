@@ -2,58 +2,28 @@
  * Node Helper: MMM-FreeboxTV
  */
 
-var NodeHelper = require("node_helper");
-const fs = require('fs');
-const path = require("path");
-const child_process = require('child_process');
-const environ = Object.assign(process.env, { DISPLAY: ":0" });
+var NodeHelper = require("node_helper")
+const fs = require('fs')
+const path = require("path")
+const child_process = require('child_process')
+const environ = Object.assign(process.env, { DISPLAY: ":0" })
 var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
 
   start: function() {
     this.stream= {},
-    this.FreeboxTV= {
-      "2": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=201&flavour=sd",
-      "3": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=202&flavour=sd",
-      "5": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=203&flavour=sd",
-      "7": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=204&flavour=sd",
-      "8": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=372&flavour=sd",
-      "12": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=375&flavour=ld",
-      "13": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=226&flavour=sd",
-      "14": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=376&flavour=sd",
-      "15": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=400&flavour=sd",
-      "16": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=679&flavour=sd",
-      "17": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=678&flavour=sd",
-      "18": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=677", // full screen only
-      "19": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=238&flavour=sd",
-      "21": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=994&flavour=ld",
-      "23": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=996&flavour=ld",
-      "24": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=997&flavour=ld",
-      "25": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=998&flavour=ld",
-      "27": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=1173&flavour=ld",
-      "28": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=213&flavour=ld",
-      "29": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=210&flavour=ld",
-      "50": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=220&flavour=sd",
-      "51": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=211&flavour=ld",
-      "53": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=404&flavour=ld",
-      "64": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=430&flavour=ld",
-      "87": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=621&flavour=sd",
-      "90": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=253&flavour=ld",
-      "176": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=212&flavour=sd",
-      "180": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=222&flavour=ld",
-      "261": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=623&flavour=sd",
-      "271": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=622&flavour=sd",
-      "347": "rtsp://mafreebox.freebox.fr/fbxtv_pub/stream?namespace=1&service=897&flavour=ld"
-    }
+    this.FreeboxTV= {}
   },
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'CONFIG') {
       console.log("[FreeboxTV] MMM-FreeboxTV Version:",  require('./package.json').version)
+      this.scanStreamsConfig()
       this.config = payload
       if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
       console.log("[FreeboxTV] FreeboxTV is initialized.")
+      this.sendSocketNotification("INITIALIZED", this.FreeboxTV)
     }
     if (notification === "PLAY") {
       this.startPlayer(payload)
@@ -129,8 +99,8 @@ end
       this.dp2 = child_process.spawn(dp2Cmd, dp2Args, opts)
       this.dp2.on('error', (err) => {
         console.log('[FreeboxTV] DP2: Failed to start.')
-      });
-    };
+      })
+    }
 
     fs.readFile(path.resolve(__dirname + '/scripts/vlc.lua'), "utf8", (err, data) => {
       if (err) throw err
@@ -151,7 +121,7 @@ end
         startDp2()
         setTimeout(() => { startDp2(); }, 5000)
       }
-    });
+    })
   },
 
   stopPlayer: function() {
@@ -165,5 +135,18 @@ end
       }
       delete this.stream.FreeboxTV
     }
+  },
+
+  scanStreamsConfig: function() {
+    console.log("[FreeboxTV] Reading streamsConfig.json...")
+    let file = path.resolve(__dirname, "streamsConfig.json")
+    if (fs.existsSync(file)) {
+      try {
+        this.FreeboxTV = JSON.parse(fs.readFileSync(file))
+        console.log("[FreeboxTV] Number of channels found:", Object.keys(this.FreeboxTV).length)
+      } catch (e) {
+        return console.log("[FreeboxTV] ERROR: streamsConfig.json", e.name)
+      }
+    } else console.log("[FreeboxTV] ERROR: missing streamsConfig.json configuration file!")
   }
 });

@@ -140,7 +140,7 @@ var recipe = {
         notification: "TV-PLAY",
         payload: (params) => {
           params = 2
-          return params 
+          return params
         }
       },
       soundExec: {
@@ -218,7 +218,7 @@ var recipe = {
       soundExec: {
         chime: "open"
       }
-    },   
+    },
     "lcp": {
       notificationExec: {
         notification: "TV-PLAY",
@@ -234,7 +234,7 @@ var recipe = {
     "bfmtv": {
       notificationExec: {
         notification: "TV-PLAY",
-        payload: (params) => {Téva
+        payload: (params) => {
           params = 15
           return params
         }
