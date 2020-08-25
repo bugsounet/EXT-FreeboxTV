@@ -137,4 +137,4 @@ une commande `/TV` a été créé:
  * Vous pouvez ajouter vos propres streams dans `streamsConfig.json`
  
 ## Bugs connus
- * petit "bug" lors du démarrage de la video ... elle est pas dans le cadre (**en cours de résolution**)
+ * petit "bug" lors du démarrage de la video... elle est pas dans le cadre (**en cours de résolution**)
