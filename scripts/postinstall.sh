@@ -52,7 +52,7 @@ fi
 
 echo
 
-Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
+# Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
 
 # check dependencies
 Installer_info "Checking all dependencies..."
@@ -65,4 +65,4 @@ echo
 Installer_info "Copy recipe 'with-FreeboxTV.js' to MMM-GoogleAssistant recipe directory"
 cp -f ../resources/with-FreeboxTV.js ../../MMM-GoogleAssistant/recipes && Installer_success "Done"
 
-Installer_exit "$Installer_module is now installed !"
+Installer_info "$Installer_module is now installed !"
