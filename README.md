@@ -138,5 +138,3 @@ une commande `/TV` a été créé:
 
 ## Bugs connus
  * petit "bug" lors du démarrage de la video... elle est pas dans le cadre (**en cours de résolution**)
- 
- 
