@@ -135,6 +135,6 @@ une commande `/TV` a été créé:
  * Si vous avez demandé l'affichage plein écran, le module TV ne s'affichera pas car il n'est pas utile ;)
  * les valeurs `width` et `height` ne sont pas utile en mode plein ecran
  * Vous pouvez ajouter vos propres streams dans `streamsConfig.json`
- 
+
 ## Bugs connus
  * petit "bug" lors du démarrage de la video... elle est pas dans le cadre (**en cours de résolution**)
