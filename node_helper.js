@@ -14,6 +14,7 @@ module.exports = NodeHelper.create({
   start: function() {
     this.stream= {},
     this.FreeboxTV= {}
+
   },
 
   socketNotificationReceived: function(notification, payload) {
@@ -57,8 +58,9 @@ module.exports = NodeHelper.create({
     if (!this.FreeboxTV[TV.name]) return log ("Chaine non trouvé:", TV.name)
     // Otherwise, Generate the VLC window
     var args = ["-I", "dummy", '--video-on-top', "--no-video-title-show", "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV",
-        this.FreeboxTV[TV.name]
+        this.FreeboxTV[TV.name].replace("%ip%", this.config.ipPlayer)
     ]
+    console.log(this.FreeboxTV[TV.name])
     if ("fullscreen" in TV) {
       args.unshift("--fullscreen")
       fullscreen = true

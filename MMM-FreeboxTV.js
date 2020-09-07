@@ -2,7 +2,7 @@
 
 Module.register("MMM-FreeboxTV", {
     defaults: {
-      debug: false,
+      debug: true,
       autoReplay: true,
       fullcreen: false,
       width: 384,
@@ -10,7 +10,8 @@ Module.register("MMM-FreeboxTV", {
       moduleOffset: 0,
       onStart: null,
       onStartDelay: 10000,
-      streams: "streamsConfig.json"
+      streams: "streamsConfig.json",
+      ipPlayer: "192.168.0.103" // pour la TNT ip du free-player
     },
 
     start: function() {
