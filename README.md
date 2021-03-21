@@ -146,6 +146,5 @@ utilisez la commande `npm run update` dans le repertoire du module
 
 ## Bugs connus
  * petit "bug" lors du démarrage de la video... elle est pas dans le cadre (**en cours de résolution**)
- 
- 
- J'ai pris le ReadMe en otage :=)) (@bugsounet)
+
+## [Support](http://forum.bugsounet.fr)
