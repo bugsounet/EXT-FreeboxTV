@@ -49,6 +49,8 @@ Voici les chaines actuellement disponibles:
    * Mise a jour du streamsConfig et du recipe
    * Ajout de npmCheck
    * Ajout de `npm run update`
+   * Ajout de `/TVol` sur telegramBot (controle du volume)
+   * Ajout du control du volume via notification
  * v1.2.0 (29-07-2020)
    * Ajout onStart pour demarrer une chaine au démarrage de MagicMirror
    * Ajout TelegramBot commande (TV)
@@ -108,7 +110,12 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
     height: 216,
     onStart: null,
     onStartDelay: 10000,
-    streams: "streamsConfig.json"
+    streams: "streamsConfig.json",
+    volume : {
+      start: 255,
+      min: 70,
+      useLast: true
+    }
   }
 },
 ```
@@ -124,9 +131,22 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
 | onStartDelay | Delai du démarrage automatique en ms (utile: permet le chargement de tous les modules) | Nombre | 10000 |
 | streams | Nom du fichier contenant les streams des chaines (format JSON) | STRING | streamsConfig.json |
 
+### Champ `volume: {}`
+| Option  | Description | Type | Defaut |
+| ------- | --- | --- | --- |
+|-start| volume au démarrage TV (entre 0 et 255) | Nombre | 255|
+|-min| volume en cas d'utilisation de l'assistant | Nombre | 70|
+|-useLast| Utilise le dernier volume utilisé | Booléen | true |
+
+UseLast: va permettre memoriser le dernier volume utilisé (avec la commande vocale avec `/TVol` de telegramBot), si vous activez la fonction.
+
 ## Demander un changement de chaine
 Activer votre assistant avec votre mot clé préféré et dites `TV <nom de la chaine>`<br>
 exemple: `Jarvis ... TV France 2`
+
+## Demander le controle du volume
+Activer votre assistant et dites `TV Volume <volume> %`<br>
+exemple: `jarvis ... TV Volume 50 %`
 
 ## Demander l'arrêt
 Activer votre assistant avec votre mot clé préféré et dites `TV stop`<br>
@@ -134,7 +154,8 @@ Activer votre assistant avec votre mot clé préféré et dites `TV stop`<br>
 ## TelegramBot
 une commande `/TV` a été créé:
  * `/TV <numéro de chaine` : zappe sur le numéro de la chaine demandé
- * `/TV`: stop le stream TV 
+ * `/TV`: stop le stream TV
+ * `/TVol`: contrôle du volulme de la TV (entre 0 et 100)
 
 ## Update:
 utilisez la commande `npm run update` dans le repertoire du module
@@ -143,8 +164,16 @@ utilisez la commande `npm run update` dans le repertoire du module
  * Si vous avez demandé l'affichage plein écran, le module TV ne s'affichera pas car il n'est pas utile ;)
  * les valeurs `width` et `height` ne sont pas utile en mode plein ecran
  * Vous pouvez ajouter vos propres streams dans `streamsConfig.json`
+ * En cas d'activation d'un assistant (MMM-GoogleAssistant ou MMM-Alexa), le son de la TV va se baisser
 
 ## Bugs connus
  * petit "bug" lors du démarrage de la video... elle est pas dans le cadre (**en cours de résolution**)
+
+## Options developpeur:
+Notification entrante:
+
+ * `TV-PLAY` payload: <numero de la chaine> -> permet de visualiser la chaine
+ * `TV-STOP` -> permet l'arrêt
+ * `FBTV_VOLUME` payload: <nombre entre 0 et 100> -> permet le changement du volume
 
 ## [Support](http://forum.bugsounet.fr)
