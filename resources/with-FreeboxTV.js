@@ -8,10 +8,6 @@ var recipe = {
       pattern: "TV stop",
       command: "stop"
     },
-    "tf1": {
-      pattern: "TV tf1",
-      command: "tf1"
-    },
     "france2": {
       pattern: "TV france 2",
       command: "france2"
@@ -28,10 +24,6 @@ var recipe = {
       pattern: "TV france 5",
       command: "france5"
     },
-    "m6": {
-      pattern: "TV m6",
-      command: "m6"
-    },
     "arte": {
       pattern: "TV arte",
       command: "arte"
@@ -39,18 +31,6 @@ var recipe = {
     "c8": {
       pattern: "TV c8",
       command: "c8"
-    },
-    "w9": {
-      pattern: "TV w9",
-      command: "w9"
-    },
-    "TMC": {
-      pattern: "TV tmc",
-      command: "tmc"
-    },
-    "TFX": {
-      pattern: "TV tfx",
-      command: "tfx"
     },
     "nrj12": {
       pattern: "TV nrj12",
@@ -76,17 +56,13 @@ var recipe = {
       pattern: "TV gulli",
       command: "gulli"
     },
-    "franceo": {
-      pattern: "TV france ô",
-      command: "franceo"
+    "culturebox": {
+      pattern: "TV Culturebox",
+      command: "culturebox"
     },
     "equipe": {
       pattern: "TV l'équipe",
       command: "equipe"
-    },
-    "6ter": {
-      pattern: "TV 6ter",
-      command: "6ter"
     },
     "rmcstory": {
       pattern: "TV RMC story",
@@ -144,6 +120,10 @@ var recipe = {
       pattern: "TV Automoto",
       command: "automoto"
     },
+    "scienceetvietv": {
+      pattern: "TV Science et Vie",
+      command: "scienceetvietv"
+    },
     "rfmtv": {
       pattern: "TV RFM TV",
       command: "rfmtv"
@@ -159,18 +139,6 @@ var recipe = {
   },
 
   commands: {
-    "tf1": {
-      notificationExec: {
-        notification: "TV-PLAY",
-        payload: (params) => {
-          params = 1
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
     "france2": {
       notificationExec: {
         notification: "TV-PLAY",
@@ -219,18 +187,6 @@ var recipe = {
         chime: "open"
       }
     },
-    "m6": {
-      notificationExec: {
-        notification: "TV-PLAY",
-        payload: (params) => {
-          params = 6
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
     "arte": {
       notificationExec: {
         notification: "TV-PLAY",
@@ -248,42 +204,6 @@ var recipe = {
         notification: "TV-PLAY",
         payload: (params) => {
           params = 8
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
-    "w9": {
-      notificationExec: {
-        notification: "TV-PLAY",
-        payload: (params) => {
-          params = 9
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
-    "tmc": {
-      notificationExec: {
-        notification: "TV-PLAY",
-        payload: (params) => {
-          params = 10
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
-    "tfx": {
-      notificationExec: {
-        notification: "TV-PLAY",
-        payload: (params) => {
-          params = 11
           return params
         }
       },
@@ -363,7 +283,7 @@ var recipe = {
         chime: "open"
       }
     },
-    "franceo": {
+    "culturebox": {
       notificationExec: {
         notification: "TV-PLAY",
         payload: (params) => {
@@ -380,18 +300,6 @@ var recipe = {
         notification: "TV-PLAY",
         payload: (params) => {
           params = 21
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
-    "6ter": {
-      notificationExec: {
-        notification: "TV-PLAY",
-        payload: (params) => {
-          params = 22
           return params
         }
       },
@@ -560,6 +468,18 @@ var recipe = {
         notification: "TV-PLAY",
         payload: (params) => {
           params = 180
+          return params
+        }
+      },
+      soundExec: {
+        chime: "open"
+      }
+    },
+    "scienceetvietv": {
+      notificationExec: {
+        notification: "TV-PLAY",
+        payload: (params) => {
+          params = 207
           return params
         }
       },

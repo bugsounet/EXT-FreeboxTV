@@ -10,8 +10,7 @@ Module.register("MMM-FreeboxTV", {
       moduleOffset: 0,
       onStart: null,
       onStartDelay: 10000,
-      streams: "streamsConfig.json",
-      ipPlayer: "192.168.0.103" // pour la TNT ip du free-player
+      streams: "streamsConfig.json"
     },
 
     start: function() {
@@ -95,9 +94,7 @@ Module.register("MMM-FreeboxTV", {
       var canvasId = "canvas_TV"
       var canvas = document.getElementById(canvasId)
 
-      if (this.FreeboxTV.playing) {
-        this.stopStream()
-      }
+      if (this.FreeboxTV.playing) this.stopStream()
 
       var rect = canvas.getBoundingClientRect()
       var offset = {}
@@ -110,9 +107,8 @@ Module.register("MMM-FreeboxTV", {
         offset.top = this.config.moduleOffset
       }
       var box = {};
-      if (fullscreen) {
-        payload.fullscreen = true
-      } else {
+      if (fullscreen) payload.fullscreen = true
+      else {
         box = {
           top: Math.round(rect.top + offset.top), // Compensate for Margins
           right: Math.round(rect.right + offset.left), // Compensate for Margins
@@ -122,9 +118,7 @@ Module.register("MMM-FreeboxTV", {
       }
       payload.box = box
 
-      if (!this.FreeboxTV.suspended) {
-        this.sendSocketNotification("PLAY", payload)
-      }
+      if (!this.FreeboxTV.suspended) this.sendSocketNotification("PLAY", payload)
       this.sendNotification("A2D_LOCK")
       this.FreeboxTV.playing = true
       this.FreeboxTV.channel = channel
@@ -135,8 +129,7 @@ Module.register("MMM-FreeboxTV", {
         this.sendSocketNotification("STOP")
         this.sendNotification("A2D_UNLOCK")
         this.FreeboxTV.playing = false
-        if (!this.FreeboxTV.suspended)
-          this.FreeboxTV.channel= null
+        if (!this.FreeboxTV.suspended) this.FreeboxTV.channel= null
       }
       if (force) {
         this.FreeboxTV.playing = false
@@ -159,6 +152,15 @@ Module.register("MMM-FreeboxTV", {
           break
         case "TV-STOP":
           this.stopStream(true)
+          break
+        case "ALEXA_ACTIVATE":
+        case "ASSISTANT_LISTEN":
+        case "ASSISTANT_THINK":
+          this.sendSocketNotification("VOLUME_CONTROL", 70)
+          break
+        case "ALEXA_STANDBY":
+        case "ASSISTANT_STANDBY":
+          this.sendSocketNotification("VOLUME_CONTROL", 255)
           break
       }
     },

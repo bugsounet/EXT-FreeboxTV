@@ -6,15 +6,16 @@ var NodeHelper = require("node_helper")
 const fs = require('fs')
 const path = require("path")
 const child_process = require('child_process')
+var Cvlc = require('@bugsounet/cvlc')
 const environ = Object.assign(process.env, { DISPLAY: ":0" })
 var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
 
   start: function() {
-    this.stream= {},
+    this.stream= null,
     this.FreeboxTV= {}
-
+    this.ID = 0
   },
 
   socketNotificationReceived: function(notification, payload) {
@@ -26,12 +27,9 @@ module.exports = NodeHelper.create({
       console.log("[FreeboxTV] FreeboxTV is initialized.")
       this.sendSocketNotification("INITIALIZED", this.FreeboxTV)
     }
-    if (notification === "PLAY") {
-      this.startPlayer(payload)
-    }
-    if (notification === "STOP") {
-      this.stopPlayer()
-    }
+    if (notification === "PLAY") this.startPlayer(payload)
+    if (notification === "STOP") this.stopPlayer()
+    if (notification === "VOLUME_CONTROL") this.volume(payload)
   },
 
   stop: function() {
@@ -48,19 +46,16 @@ module.exports = NodeHelper.create({
   },
 
   startPlayer: function(payload) {
-    var opts = { detached: false, env: environ, stdio: ['ignore', 'ignore', 'pipe'] }
-    var vlcCmd = `cvlc`
     var positions = {}
     let dp2Check = false
     var TV = payload
     var fullscreen = false
+    this.ID++
 
     if (!this.FreeboxTV[TV.name]) return log ("Chaine non trouvé:", TV.name)
-    // Otherwise, Generate the VLC window
-    var args = ["-I", "dummy", '--video-on-top', "--no-video-title-show", "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV",
-        this.FreeboxTV[TV.name].replace("%ip%", this.config.ipPlayer)
-    ]
-    console.log(this.FreeboxTV[TV.name])
+    var link = this.FreeboxTV[TV.name]
+    // Generate the VLC window
+    var args = ['--video-on-top', "--no-video-title-show", "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV"]
     if ("fullscreen" in TV) {
       args.unshift("--fullscreen")
       fullscreen = true
@@ -69,17 +64,26 @@ module.exports = NodeHelper.create({
       positions = `${TV.box.left}, ${TV.box.top}, ${TV.box.right-TV.box.left}, ${TV.box.bottom-TV.box.top}`
       dp2Check = true
     }
-    log("Démarrage " + (fullscreen ? "plein écran " : "") + `de la chaine ${TV.name} (utilisation de VLC avec arguments: ${args.join(' ')}...`)
-
-    this.stream.FreeboxTV = child_process.spawn(vlcCmd, args, opts)
-
-    this.stream.FreeboxTV.on('error', (err) => {
-      console.error("[FreeboxTV] Impossible de démarrer le processus: " +err)
-    })
-    this.stream.FreeboxTV.on('close', (code) => console.log(code))
-
-    if (!dp2Check) { return; }
-
+    this.stream = new Cvlc(args)
+    log("Démarrage " + (fullscreen ? "plein écran " : "") + `de la chaine ${TV.name}...`)
+    this.stream.play(
+      link,
+      ()=> {
+        log("Found link:", link)
+         if (this.stream) this.volume(255)
+      },
+      ()=> {
+        this.ID--
+        if (this.ID < 0) this.ID = 0
+        log("Video ended")
+        if (this.ID == 0) {
+          log("Finish !")
+          this.stream = null
+        }
+      }
+    )
+    if (!dp2Check) return
+    var opts = { detached: false, env: environ, stdio: ['ignore', 'ignore', 'pipe'] }
     var dp2Cmd = `devilspie2`
     var dp2Args = ['--debug', '-f', path.resolve(__dirname + '/scripts')]
     let dp2Config =`
@@ -114,7 +118,6 @@ end
           if (err) throw err
 
           log('DP2: Config File Saved!')
-          if (this.config.debug) { console.log(dp2Config) }
           startDp2()
           // Give the windows time to settle, then re-call to resize again.
           setTimeout(() => { startDp2(); }, 5000)
@@ -127,15 +130,9 @@ end
   },
 
   stopPlayer: function() {
-    if ("FreeboxTV" in this.stream) {
+    if (this.stream) {
+      this.stream.destroy()
       log("Arrêt de la diffusion")
-      try {
-        this.stream.FreeboxTV.stderr.removeAllListeners()
-        this.stream.FreeboxTV.kill()
-      } catch (err) {
-        console.log("[FreeboxTV] Stop crash:" + err)
-      }
-      delete this.stream.FreeboxTV
     }
   },
 
@@ -150,5 +147,12 @@ end
         return console.log("[FreeboxTV] ERROR: " + this.config.streams, e.name)
       }
     } else console.log("[FreeboxTV] ERROR: missing " + this.config.streams + " configuration file!")
+  },
+
+  volume: function(volume) {
+    if (this.stream) {
+      log("Set VLC Volume to:", volume)
+      this.stream.cmd("volume " + volume)
+    }
   }
 });
