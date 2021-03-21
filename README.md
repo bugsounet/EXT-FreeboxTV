@@ -20,7 +20,7 @@ Voici les chaines actuellement disponibles:
 | 16 | C NEWS |
 | 17 | C Star |
 | 18 | Gulli (uniquement en plein écran) |
-| 19 | France ô |
+| 19 | Culture Box |
 | 21 | L'équipe |
 | 23 | RMC Story |
 | 24 | RMC Découverte |
@@ -44,6 +44,11 @@ Voici les chaines actuellement disponibles:
 ![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screenshoot.jpg)
 
 ## Mise à jour
+ * V1.3.0 (21-03-2021)
+   * Recode avec @bugsounet/cvlc birarie
+   * Mise a jour du streamsConfig et du recipe
+   * Ajout de npmCheck
+   * Ajout de `npm run update`
  * v1.2.0 (29-07-2020)
    * Ajout onStart pour demarrer une chaine au démarrage de MagicMirror
    * Ajout TelegramBot commande (TV)
@@ -130,6 +135,9 @@ Activer votre assistant avec votre mot clé préféré et dites `TV stop`<br>
 une commande `/TV` a été créé:
  * `/TV <numéro de chaine` : zappe sur le numéro de la chaine demandé
  * `/TV`: stop le stream TV 
+
+## Update:
+utilisez la commande `npm run update` dans le repertoire du module
 
 ## Notes:
  * Si vous avez demandé l'affichage plein écran, le module TV ne s'affichera pas car il n'est pas utile ;)
