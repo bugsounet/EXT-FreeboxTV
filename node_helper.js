@@ -14,9 +14,10 @@ var log = (...args) => { /* do nothing */ }
 module.exports = NodeHelper.create({
 
   start: function() {
-    this.stream= null,
+    this.stream= null
     this.FreeboxTV= {}
     this.ID = 0
+    this.volumeControl = null
   },
 
   socketNotificationReceived: function(notification, payload) {
@@ -40,10 +41,11 @@ module.exports = NodeHelper.create({
     if (notification === "PLAY") this.startPlayer(payload)
     if (notification === "STOP") this.stopPlayer()
     if (notification === "VOLUME_CONTROL") this.volume(payload)
+    if (notification === "VOLUME_LAST") this.volumeControl = payload
   },
 
   stop: function() {
-    log("Arrêt du flux TV...")
+    log("Stop TV...")
 
     // Kill VLC Stream
     if (this.dp2) {
@@ -62,7 +64,7 @@ module.exports = NodeHelper.create({
     var fullscreen = false
     this.ID++
 
-    if (!this.FreeboxTV[TV.name]) return log ("Chaine non trouvé:", TV.name)
+    if (!this.FreeboxTV[TV.name]) return log ("Channel not found:", TV.name)
     var link = this.FreeboxTV[TV.name]
     // Generate the VLC window
     var args = ['--video-on-top', "--no-video-title-show", "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV"]
@@ -75,12 +77,12 @@ module.exports = NodeHelper.create({
       dp2Check = true
     }
     this.stream = new Cvlc(args)
-    log("Démarrage " + (fullscreen ? "plein écran " : "") + `de la chaine ${TV.name}...`)
+    log("Starting " + (fullscreen ? "in fullscreen " : "") + `of the channel ${TV.name}...`)
     this.stream.play(
       link,
       ()=> {
         log("Found link:", link)
-         if (this.stream) this.volume(255)
+         if (this.stream) this.volume(this.volumeControl ? this.volumeControl: this.config.volume.start)
       },
       ()=> {
         this.ID--
@@ -142,7 +144,7 @@ end
   stopPlayer: function() {
     if (this.stream) {
       this.stream.destroy()
-      log("Arrêt de la diffusion")
+      log("Stop streaming")
     }
   },
 
@@ -160,6 +162,7 @@ end
   },
 
   volume: function(volume) {
+    console.log(this.stream)
     if (this.stream) {
       log("Set VLC Volume to:", volume)
       this.stream.cmd("volume " + volume)

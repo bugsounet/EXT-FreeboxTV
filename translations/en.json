@@ -1,0 +1,9 @@
+{
+  "FBTV_TV" : "Launch a FreeboxTV Channel",
+  "FBTV_TVOL": "Volume control of the TV",
+  "FBTV_TV_DISPLAY": "Displaying channel: ",
+  "FBTV_TV_NOTFOUND": "Channel not found: ",
+  "FBTV_TV_DOWN" : "I turn off the TV",
+  "FBTV_TVOL_SET": "I set the volume to ",
+  "FBTV_TVOL_RULE": "The volume value must be between 0 and 100"
+}

@@ -4,6 +4,10 @@
 
 var recipe = {
   transcriptionHooks: {
+    "VOLUMETV": {
+      pattern: "TV volume (.*)",
+      command: "VOLUMETV"
+    },
     "stop": {
       pattern: "TV stop",
       command: "stop"
@@ -531,6 +535,14 @@ var recipe = {
         chime: "close"
       }
     },
+    "VOLUMETV": {
+      notificationExec: {
+        notification: "FBTV_VOLUME",
+        payload: (params) => {
+          return params[1]
+        }
+      }
+    }
   }
 }
 exports.recipe = recipe
