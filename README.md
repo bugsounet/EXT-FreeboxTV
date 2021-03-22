@@ -51,6 +51,7 @@ Voici les chaines actuellement disponibles:
    * Ajout de `npm run update`
    * Ajout de `/TVol` sur telegramBot (controle du volume)
    * Ajout du control du volume via notification
+   * Ajout traduction EN
  * v1.2.0 (29-07-2020)
    * Ajout onStart pour demarrer une chaine au démarrage de MagicMirror
    * Ajout TelegramBot commande (TV)
@@ -155,7 +156,7 @@ Activer votre assistant avec votre mot clé préféré et dites `TV stop`<br>
 une commande `/TV` a été créé:
  * `/TV <numéro de chaine` : zappe sur le numéro de la chaine demandé
  * `/TV`: stop le stream TV
- * `/TVol`: contrôle du volulme de la TV (entre 0 et 100)
+ * `/TVol`: contrôle du volume de la TV (entre 0 et 100)
 
 ## Update:
 utilisez la commande `npm run update` dans le repertoire du module
@@ -176,4 +177,6 @@ Notification entrante:
  * `TV-STOP` -> permet l'arrêt
  * `FBTV_VOLUME` payload: <nombre entre 0 et 100> -> permet le changement du volume
 
-## [Support](http://forum.bugsounet.fr)
+## [Le Support est maintenant disponible sur le forum @bugsounet](http://forum.bugsounet.fr)
+
+## English users: translation will be available in wiki !
