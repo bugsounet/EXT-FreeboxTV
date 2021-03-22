@@ -136,8 +136,8 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
 ### Champ `volume: {}`
 | Option  | Description | Type | Defaut |
 | ------- | --- | --- | --- |
-|-start| volume au démarrage TV (entre 0 et 100) | Nombre | 255|
-|-min| volume en cas d'utilisation de l'assistant | Nombre | 70|
+|-start| volume au démarrage TV (entre 0 et 100) | Nombre | 100|
+|-min| volume en cas d'utilisation de l'assistant | Nombre | 30|
 |-useLast| Utilise le dernier volume utilisé | Booléen | true |
 
 UseLast va permettre memoriser le dernier volume utilisé (avec la commande vocale ou avec `/TVol` de telegramBot), si vous activez la fonction.
