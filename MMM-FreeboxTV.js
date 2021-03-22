@@ -240,6 +240,7 @@ Module.register("MMM-FreeboxTV", {
     TV: function(command, handler) {
       if (handler.args) {
         if (this.ChannelsCheck(handler.args)) {
+          this.sendNotification("WAKEUP")
           this.playStream(handler.args,this.config.fullscreen)
           return handler.reply("TEXT", this.translate("FBTV_TV_DISPLAY") + handler.args)
         } else return handler.reply("TEXT", this.translate("FBTV_TV_NOTFOUND") + handler.args)
