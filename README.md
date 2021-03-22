@@ -103,6 +103,7 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
 {
   module: 'MMM-FreeboxTV',
   position: 'top_left',
+  configDeepMerge: true,
   config: {
     debug: false,
     autoReplay: true,
