@@ -45,7 +45,7 @@ Voici les chaines actuellement disponibles:
 
 ## Mise à jour
  * V1.3.0 (21-03-2021)
-   * Recode avec @bugsounet/cvlc birarie
+   * Recode avec @bugsounet/cvlc lib.
    * Mise a jour du streamsConfig et du recipe
    * Ajout de npmCheck
    * Ajout de `npm run update`
@@ -113,8 +113,8 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
     onStartDelay: 10000,
     streams: "streamsConfig.json",
     volume : {
-      start: 255,
-      min: 70,
+      start: 100,
+      min: 30,
       useLast: true
     }
   }
@@ -135,11 +135,11 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
 ### Champ `volume: {}`
 | Option  | Description | Type | Defaut |
 | ------- | --- | --- | --- |
-|-start| volume au démarrage TV (entre 0 et 255) | Nombre | 255|
+|-start| volume au démarrage TV (entre 0 et 100) | Nombre | 255|
 |-min| volume en cas d'utilisation de l'assistant | Nombre | 70|
 |-useLast| Utilise le dernier volume utilisé | Booléen | true |
 
-UseLast: va permettre memoriser le dernier volume utilisé (avec la commande vocale avec `/TVol` de telegramBot), si vous activez la fonction.
+UseLast va permettre memoriser le dernier volume utilisé (avec la commande vocale ou avec `/TVol` de telegramBot), si vous activez la fonction.
 
 ## Demander un changement de chaine
 Activer votre assistant avec votre mot clé préféré et dites `TV <nom de la chaine>`<br>

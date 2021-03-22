@@ -12,8 +12,8 @@ Module.register("MMM-FreeboxTV", {
       onStartDelay: 10000,
       streams: "streamsConfig.json",
       volume: {
-        start: 255,
-        min: 70,
+        start: 100,
+        min: 30,
         useLast: true
       },
       NPMCheck: {
@@ -33,6 +33,7 @@ Module.register("MMM-FreeboxTV", {
       this.moduleWidth= this.config.width + 6
       this.moduleHeight= this.config.height + 6
       this.Channels = {}
+      this.initializeVolume()
     },
 
     /* suspend()
@@ -196,6 +197,7 @@ Module.register("MMM-FreeboxTV", {
           }
           else console.log("[FreeboxTV] onStart: Channel not found", this.config.onStart)
         }
+        console.log("[FreeboxTV] Ready, the show must go on!")
       }
       if(notification == "NPM_UPDATE") {
         if (payload && payload.length > 0) {
@@ -264,5 +266,34 @@ Module.register("MMM-FreeboxTV", {
     ChannelsCheck: function (channel) {
       if (this.Channels.hasOwnProperty(channel)) return true
       return false
+    },
+
+    initializeVolume: function() {
+      /** convert volume **/
+      try {
+        let valueStart = null
+        valueStart = parseInt(this.config.volume.start)
+        if (typeof valueStart === "number" && valueStart >= 0 && valueStart <= 100) this.config.volume.start = ((valueStart * 255) / 100).toFixed(0)
+        else {
+          console.error("[FreeboxTV] config.volume.start error! Corrected with 100")
+          this.config.volume.min = 255
+        }
+      } catch (e) {
+        console.error("[FreeboxTV] config.volume.start error!", e)
+        this.config.volume.min = 255
+      }
+      try {
+        let valueMin = null
+        valueMin = parseInt(this.config.volume.min)
+        if (typeof valueMin === "number" && valueMin >= 0 && valueMin <= 100) this.config.volume.min = ((valueMin * 255) / 100).toFixed(0)
+        else {
+          console.error("[FreeboxTV] config.volume.min error! Corrected with 30")
+          this.config.volume.min = 70
+        }
+      } catch (e) {
+        console.error("[FreeboxTV] config.volume.min error!", e)
+        this.config.volume.min = 70
+      }
+      console.log("[FreeboxTV] Volume Control initialized!")
     }
 });

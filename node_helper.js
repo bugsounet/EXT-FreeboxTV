@@ -36,6 +36,7 @@ module.exports = NodeHelper.create({
         this.Checker= new npmCheck(cfg, update => { this.sendSocketNotification("NPM_UPDATE", update)} )
       }
       console.log("[FreeboxTV] FreeboxTV is initialized.")
+      log("Config:", this.config)
       this.sendSocketNotification("INITIALIZED", this.FreeboxTV)
     }
     if (notification === "PLAY") this.startPlayer(payload)
