@@ -4,6 +4,14 @@
 
 var recipe = {
   transcriptionHooks: {
+    "TVFULL": {
+      pattern: "TV plein écran",
+      command: "TVFull"
+    },
+    "TVWIN": {
+      pattern: "TV fenêtre",
+      command: "TVWin"
+    },
     "VOLUMETV": {
       pattern: "TV volume (.*)",
       command: "VOLUMETV"
@@ -541,6 +549,16 @@ var recipe = {
         payload: (params) => {
           return params[1]
         }
+      }
+    },
+    "TVFull": {
+      notificationExec: {
+        notification: "TV-FULLSCREEN"
+      }
+    },
+    "TVWin": {
+      notificationExec: {
+        notification: "TV-WINDOWS"
       }
     }
   }
