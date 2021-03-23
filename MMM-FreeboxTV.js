@@ -159,6 +159,12 @@ Module.register("MMM-FreeboxTV", {
         case "DOM_OBJECTS_CREATED":
           this.sendSocketNotification("CONFIG", this.config)
           break
+        case "TV-FULLSCREEN":
+          if (!this.config.fullscreen) this.sendSocketNotification("TV-FULLSCREEN")
+          break
+        case "TV-WINDOWS":
+          if (!this.config.fullscreen) this.sendSocketNotification("TV-WINDOWS")
+          break
         case "TV-PLAY":
           this.playStream(payload,this.config.fullscreen)
           break
@@ -235,6 +241,18 @@ Module.register("MMM-FreeboxTV", {
         description: this.translate("FBTV_TVOL"),
         callback: "TVol"
       })
+      if (!this.config.fullscreen) {
+        commander.add({
+          command: "TVFull",
+          description: this.translate("FBTV_TVFULL"),
+          callback: "TVFull"
+        })
+        commander.add({
+          command: "TVWin",
+          description: this.translate("FBTV_TVWIN"),
+          callback: "TVWin"
+        })
+      }
     },
 
     TV: function(command, handler) {
@@ -262,6 +280,20 @@ Module.register("MMM-FreeboxTV", {
         }
       }
       else return handler.reply("TEXT", this.translate("FBTV_TVOL_RULE"))
+    },
+
+    TVFull: function(command, handler) {
+      if (this.FreeboxTV.playing) {
+        this.sendSocketNotification("TV-FULLSCREEN")
+        handler.reply("TEXT", this.translate("FBTV_TV_FULL"))
+      } else handler.reply("TEXT", this.translate("FBTV_TV_ERR"))
+    },
+
+    TVWin: function(command, handler) {
+      if (this.FreeboxTV.playing) {
+        this.sendSocketNotification("TV-WINDOWS")
+        handler.reply("TEXT", this.translate("FBTV_TV_WIN"))
+      } else handler.reply("TEXT", this.translate("FBTV_TV_ERR"))
     },
 
     ChannelsCheck: function (channel) {

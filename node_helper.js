@@ -21,28 +21,44 @@ module.exports = NodeHelper.create({
   },
 
   socketNotificationReceived: function(notification, payload) {
-    if (notification === 'CONFIG') {
-      console.log("[FreeboxTV] MMM-FreeboxTV Version:",  require('./package.json').version)
-      this.config = payload
-      this.scanStreamsConfig()
-      if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
-      if (this.config.NPMCheck.useChecker) {
-        var cfg = {
-          dirName: __dirname,
-          moduleName: this.name,
-          timer: this.config.NPMCheck.delay,
-          debug: this.config.debug
+    switch(notification) {
+      case "CONFIG":
+        console.log("[FreeboxTV] MMM-FreeboxTV Version:",  require('./package.json').version)
+        this.config = payload
+        this.scanStreamsConfig()
+        if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
+        if (this.config.NPMCheck.useChecker) {
+          var cfg = {
+            dirName: __dirname,
+            moduleName: this.name,
+            timer: this.config.NPMCheck.delay,
+            debug: this.config.debug
+          }
+          this.Checker= new npmCheck(cfg, update => { this.sendSocketNotification("NPM_UPDATE", update)} )
         }
-        this.Checker= new npmCheck(cfg, update => { this.sendSocketNotification("NPM_UPDATE", update)} )
-      }
-      console.log("[FreeboxTV] FreeboxTV is initialized.")
-      log("Config:", this.config)
-      this.sendSocketNotification("INITIALIZED", this.FreeboxTV)
+        console.log("[FreeboxTV] FreeboxTV is initialized.")
+        log("Config:", this.config)
+        this.sendSocketNotification("INITIALIZED", this.FreeboxTV)
+        break
+      case "PLAY":
+        this.startPlayer(payload)
+        break
+      case "STOP":
+        this.stopPlayer()
+        break
+      case "VOLUME_CONTROL":
+        this.volume(payload)
+        break
+      case "VOLUME_LAST":
+        this.volumeControl = payload
+        break
+      case "TV-FULLSCREEN":
+        this.fullscreen(true)
+        break
+      case "TV-WINDOWS":
+        this.fullscreen(false)
+        break
     }
-    if (notification === "PLAY") this.startPlayer(payload)
-    if (notification === "STOP") this.stopPlayer()
-    if (notification === "VOLUME_CONTROL") this.volume(payload)
-    if (notification === "VOLUME_LAST") this.volumeControl = payload
   },
 
   stop: function() {
@@ -163,10 +179,21 @@ end
   },
 
   volume: function(volume) {
-    console.log(this.stream)
     if (this.stream) {
       log("Set VLC Volume to:", volume)
       this.stream.cmd("volume " + volume)
+    }
+  },
+
+  fullscreen: function(wanted) {
+    if (!this.stream) return
+    if (wanted) {
+      log("Set VLC in fullscreen")
+      this.stream.cmd("fullscreen on")
+    }
+    else {
+      log("Set VLC in a windows")
+      this.stream.cmd("fullscreen off")
     }
   }
 });
