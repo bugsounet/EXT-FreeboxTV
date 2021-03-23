@@ -153,6 +153,15 @@ exemple: `jarvis ... TV Volume 50 %`
 ## Demander l'arrêt
 Activer votre assistant avec votre mot clé préféré et dites `TV stop`<br>
 
+## Affichage Plein écran / fenêtre
+Attention ces commandes sont uniquement disponible si le mode fullscreen est desactivée dans votre configuration
+
+### Plein écran
+Activer votre assistant avec votre mot clé préféré et dites `TV plein écran`<br>
+
+### Fenêtre
+Activer votre assistant avec votre mot clé préféré et dites `TV fenêtre`<br>
+
 ## TelegramBot
 une commande `/TV` a été créé:
  * `/TV <numéro de chaine` : zappe sur le numéro de la chaine demandé
