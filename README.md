@@ -49,7 +49,7 @@ Voici les chaines actuellement disponibles:
    * Mise a jour du streamsConfig et du recipe
    * Ajout de npmCheck
    * Ajout de `npm run update`
-   * Ajout de `/TVol` sur telegramBot (controle du volume)
+   * Ajout de `/TVol` , `/TVFull`, `/TVWin` sur telegramBot (controle du volume et de l'affichage)
    * Ajout du control du volume via notification
    * Ajout traduction EN
  * v1.2.0 (29-07-2020)
@@ -158,6 +158,8 @@ une commande `/TV` a été créé:
  * `/TV <numéro de chaine` : zappe sur le numéro de la chaine demandé
  * `/TV`: stop le stream TV
  * `/TVol`: contrôle du volume de la TV (entre 0 et 100)
+ * `/TVFull`: Affichage la TV en plein écran (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
+ * `/TVWin`: Affiche la TV dans une fenêtre (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
 
 ## Update:
 utilisez la commande `npm run update` dans le repertoire du module
@@ -177,6 +179,8 @@ Notification entrante:
  * `TV-PLAY` payload: <numero de la chaine> -> permet de visualiser la chaine
  * `TV-STOP` -> permet l'arrêt
  * `FBTV_VOLUME` payload: <nombre entre 0 et 100> -> permet le changement du volume
+ * `FBTV_FULLSCREEN` -> Affichage la TV en plein écran (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
+ * `FBTV_WINDOWS` -> Affiche la TV dans une fenêtre (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
 
 ## [Le Support est maintenant disponible sur le forum @bugsounet](http://forum.bugsounet.fr)
 
