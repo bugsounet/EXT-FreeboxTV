@@ -2,7 +2,7 @@
 
 Module.register("MMM-FreeboxTV", {
     defaults: {
-      debug: false,
+      debug: true,
       autoReplay: true,
       fullcreen: false,
       width: 384,
@@ -10,7 +10,17 @@ Module.register("MMM-FreeboxTV", {
       moduleOffset: 0,
       onStart: null,
       onStartDelay: 10000,
-      streams: "streamsConfig.json"
+      streams: "streamsConfig.json",
+      volume: {
+        start: 100,
+        min: 30,
+        useLast: true
+      },
+      NPMCheck: {
+        useChecker: true,
+        delay: 10 * 60 * 1000,
+        useAlert: true
+      }
     },
 
     start: function() {
@@ -19,9 +29,11 @@ Module.register("MMM-FreeboxTV", {
         channel: null,
         suspended: false
       }
+      this.volumeControl= null
       this.moduleWidth= this.config.width + 6
       this.moduleHeight= this.config.height + 6
       this.Channels = {}
+      this.initializeVolume()
     },
 
     /* suspend()
@@ -94,9 +106,7 @@ Module.register("MMM-FreeboxTV", {
       var canvasId = "canvas_TV"
       var canvas = document.getElementById(canvasId)
 
-      if (this.FreeboxTV.playing) {
-        this.stopStream()
-      }
+      if (this.FreeboxTV.playing) this.stopStream()
 
       var rect = canvas.getBoundingClientRect()
       var offset = {}
@@ -109,9 +119,8 @@ Module.register("MMM-FreeboxTV", {
         offset.top = this.config.moduleOffset
       }
       var box = {};
-      if (fullscreen) {
-        payload.fullscreen = true
-      } else {
+      if (fullscreen) payload.fullscreen = true
+      else {
         box = {
           top: Math.round(rect.top + offset.top), // Compensate for Margins
           right: Math.round(rect.right + offset.left), // Compensate for Margins
@@ -121,9 +130,7 @@ Module.register("MMM-FreeboxTV", {
       }
       payload.box = box
 
-      if (!this.FreeboxTV.suspended) {
-        this.sendSocketNotification("PLAY", payload)
-      }
+      if (!this.FreeboxTV.suspended) this.sendSocketNotification("PLAY", payload)
       this.sendNotification("A2D_LOCK")
       this.FreeboxTV.playing = true
       this.FreeboxTV.channel = channel
@@ -134,8 +141,7 @@ Module.register("MMM-FreeboxTV", {
         this.sendSocketNotification("STOP")
         this.sendNotification("A2D_UNLOCK")
         this.FreeboxTV.playing = false
-        if (!this.FreeboxTV.suspended)
-          this.FreeboxTV.channel= null
+        if (!this.FreeboxTV.suspended) this.FreeboxTV.channel= null
       }
       if (force) {
         this.FreeboxTV.playing = false
@@ -153,11 +159,36 @@ Module.register("MMM-FreeboxTV", {
         case "DOM_OBJECTS_CREATED":
           this.sendSocketNotification("CONFIG", this.config)
           break
+        case "TV-FULLSCREEN":
+          if (!this.config.fullscreen) this.sendSocketNotification("TV-FULLSCREEN")
+          break
+        case "TV-WINDOWS":
+          if (!this.config.fullscreen) this.sendSocketNotification("TV-WINDOWS")
+          break
         case "TV-PLAY":
           this.playStream(payload,this.config.fullscreen)
           break
         case "TV-STOP":
           this.stopStream(true)
+          break
+        case "ALEXA_ACTIVATE":
+        case "ASSISTANT_LISTEN":
+        case "ASSISTANT_THINK":
+          if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.config.volume.min)
+          break
+        case "ALEXA_STANDBY":
+        case "ASSISTANT_STANDBY":
+          if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl ? this.volumeControl : this.config.volume.start)
+          break
+        case "TV-VOLUME":
+          let value = null
+          if (payload) value = parseInt(payload)
+          if (typeof value === "number" && value >= 0 && value <= 100) {
+            this.volumeControl = ((value * 255) / 100).toFixed(0)
+            if (this.config.volume.useLast) this.sendSocketNotification("VOLUME_LAST", this.volumeControl)
+            if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl)
+            console.log("[FreeboxTV] Volume:", this.volumeControl, "[" + value + "]")
+          } else console.log("[FreeboxTV] Volume Control wrong value:", payload)
           break
       }
     },
@@ -167,11 +198,34 @@ Module.register("MMM-FreeboxTV", {
         this.Channels = payload
         if (this.config.onStart) {
           if (this.ChannelsCheck(this.config.onStart)) {
-            console.log("[FreeboxTV] onStart: Lancemement de la chaine " + this.config.onStart + " dans " + this.config.onStartDelay / 1000 + " Sec")
+            console.log("[FreeboxTV] onStart: Launching: " + this.config.onStart + " in " + this.config.onStartDelay / 1000 + " Sec")
             setTimeout(() => this.playStream(this.config.onStart,this.config.fullscreen), this.config.onStartDelay)
           }
-          else console.log("[FreeboxTV] onStart: Chaine non trouvé", this.config.onStart)
+          else console.log("[FreeboxTV] onStart: Channel not found", this.config.onStart)
         }
+        console.log("[FreeboxTV] Ready, the show must go on!")
+      }
+      if(notification == "NPM_UPDATE") {
+        if (payload && payload.length > 0) {
+          if (this.config.NPMCheck.useAlert) {
+            payload.forEach(npm => {
+              this.sendNotification("SHOW_ALERT", {
+                type: "notification" ,
+                message: "[NPM] " + npm.library + " v" + npm.installed +" -> v" + npm.latest,
+                title: this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module }),
+                timer: this.config.NPMCheck.delay - 2000
+              })
+            })
+          }
+          this.sendNotification("NPM_UPDATE", payload)
+        }
+      }
+    },
+
+    getTranslations: function() {
+      return {
+        en: "translations/en.json",
+        fr: "translations/fr.json",
       }
     },
 
@@ -179,24 +233,100 @@ Module.register("MMM-FreeboxTV", {
     getCommands: function(commander) {
       commander.add({
         command: "TV",
-        description: "Lance un chaine de FreeboxTV",
+        description: this.translate("FBTV_TV"),
         callback: "TV"
       })
+      commander.add({
+        command: "TVol",
+        description: this.translate("FBTV_TVOL"),
+        callback: "TVol"
+      })
+      if (!this.config.fullscreen) {
+        commander.add({
+          command: "TVFull",
+          description: this.translate("FBTV_TVFULL"),
+          callback: "TVFull"
+        })
+        commander.add({
+          command: "TVWin",
+          description: this.translate("FBTV_TVWIN"),
+          callback: "TVWin"
+        })
+      }
     },
 
     TV: function(command, handler) {
       if (handler.args) {
         if (this.ChannelsCheck(handler.args)) {
+          this.sendNotification("WAKEUP")
           this.playStream(handler.args,this.config.fullscreen)
-          return handler.reply("TEXT", "J'affiche la chaine: " + handler.args)
-        } else return handler.reply("TEXT", "Chaine non trouvé: " + handler.args)
+          return handler.reply("TEXT", this.translate("FBTV_TV_DISPLAY") + handler.args)
+        } else return handler.reply("TEXT", this.translate("FBTV_TV_NOTFOUND") + handler.args)
       }
       this.stopStream(true)
-      handler.reply("TEXT", "J'éteins la TV")
+      handler.reply("TEXT", this.translate("FBTV_TV_DOWN"))
+    },
+
+    TVol: function(command, handler) {
+      if (handler.args) {
+        let value = null
+        value = parseInt(handler.args)
+        if (typeof value === "number" && value >= 0 && value <= 100) {
+          this.volumeControl = ((value * 255) / 100).toFixed(0)
+          if (this.config.volume.useLast) this.sendSocketNotification("VOLUME_LAST", this.volumeControl)
+          this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl)
+          console.log("[FreeboxTV] Volume:", this.volumeControl, "[" + value + "]")
+          return handler.reply("TEXT", this.translate("FBTV_TVOL_SET") + handler.args + "%")
+        }
+      }
+      else return handler.reply("TEXT", this.translate("FBTV_TVOL_RULE"))
+    },
+
+    TVFull: function(command, handler) {
+      if (this.FreeboxTV.playing) {
+        this.sendSocketNotification("TV-FULLSCREEN")
+        handler.reply("TEXT", this.translate("FBTV_TV_FULL"))
+      } else handler.reply("TEXT", this.translate("FBTV_TV_ERR"))
+    },
+
+    TVWin: function(command, handler) {
+      if (this.FreeboxTV.playing) {
+        this.sendSocketNotification("TV-WINDOWS")
+        handler.reply("TEXT", this.translate("FBTV_TV_WIN"))
+      } else handler.reply("TEXT", this.translate("FBTV_TV_ERR"))
     },
 
     ChannelsCheck: function (channel) {
       if (this.Channels.hasOwnProperty(channel)) return true
       return false
+    },
+
+    initializeVolume: function() {
+      /** convert volume **/
+      try {
+        let valueStart = null
+        valueStart = parseInt(this.config.volume.start)
+        if (typeof valueStart === "number" && valueStart >= 0 && valueStart <= 100) this.config.volume.start = ((valueStart * 255) / 100).toFixed(0)
+        else {
+          console.error("[FreeboxTV] config.volume.start error! Corrected with 100")
+          this.config.volume.min = 255
+        }
+      } catch (e) {
+        console.error("[FreeboxTV] config.volume.start error!", e)
+        this.config.volume.min = 255
+      }
+      try {
+        let valueMin = null
+        valueMin = parseInt(this.config.volume.min)
+        if (typeof valueMin === "number" && valueMin >= 0 && valueMin <= 100) this.config.volume.min = ((valueMin * 255) / 100).toFixed(0)
+        else {
+          console.error("[FreeboxTV] config.volume.min error! Corrected with 30")
+          this.config.volume.min = 70
+        }
+      } catch (e) {
+        console.error("[FreeboxTV] config.volume.min error!", e)
+        this.config.volume.min = 70
+      }
+      console.log("[FreeboxTV] Volume Control initialized!")
     }
 });

@@ -4,6 +4,18 @@
 
 var recipe = {
   transcriptionHooks: {
+    "TVFULL": {
+      pattern: "TV plein écran",
+      command: "TVFull"
+    },
+    "TVWIN": {
+      pattern: "TV fenêtre",
+      command: "TVWin"
+    },
+    "VOLUMETV": {
+      pattern: "TV volume (.*)",
+      command: "VOLUMETV"
+    },
     "stop": {
       pattern: "TV stop",
       command: "stop"
@@ -56,9 +68,9 @@ var recipe = {
       pattern: "TV gulli",
       command: "gulli"
     },
-    "franceo": {
-      pattern: "TV france ô",
-      command: "franceo"
+    "culturebox": {
+      pattern: "TV Culturebox",
+      command: "culturebox"
     },
     "equipe": {
       pattern: "TV l'équipe",
@@ -119,6 +131,10 @@ var recipe = {
     "automoto": {
       pattern: "TV Automoto",
       command: "automoto"
+    },
+    "scienceetvietv": {
+      pattern: "TV Science et Vie",
+      command: "scienceetvietv"
     },
     "rfmtv": {
       pattern: "TV RFM TV",
@@ -279,7 +295,7 @@ var recipe = {
         chime: "open"
       }
     },
-    "franceo": {
+    "culturebox": {
       notificationExec: {
         notification: "TV-PLAY",
         payload: (params) => {
@@ -471,6 +487,18 @@ var recipe = {
         chime: "open"
       }
     },
+    "scienceetvietv": {
+      notificationExec: {
+        notification: "TV-PLAY",
+        payload: (params) => {
+          params = 207
+          return params
+        }
+      },
+      soundExec: {
+        chime: "open"
+      }
+    },
     "rfmtv": {
       notificationExec: {
         notification: "TV-PLAY",
@@ -515,6 +543,24 @@ var recipe = {
         chime: "close"
       }
     },
+    "VOLUMETV": {
+      notificationExec: {
+        notification: "TV-VOLUME",
+        payload: (params) => {
+          return params[1]
+        }
+      }
+    },
+    "TVFull": {
+      notificationExec: {
+        notification: "TV-FULLSCREEN"
+      }
+    },
+    "TVWin": {
+      notificationExec: {
+        notification: "TV-WINDOWS"
+      }
+    }
   }
 }
 exports.recipe = recipe

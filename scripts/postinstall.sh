@@ -52,8 +52,6 @@ fi
 
 echo
 
-# Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
-
 # check dependencies
 Installer_info "Checking all dependencies..."
 dependencies=(devilspie2 vlc)

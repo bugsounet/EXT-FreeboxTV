@@ -20,7 +20,7 @@ Voici les chaines actuellement disponibles:
 | 16 | C NEWS |
 | 17 | C Star |
 | 18 | Gulli (uniquement en plein écran) |
-| 19 | France ô |
+| 19 | Culture Box |
 | 21 | L'équipe |
 | 23 | RMC Story |
 | 24 | RMC Découverte |
@@ -44,6 +44,14 @@ Voici les chaines actuellement disponibles:
 ![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screenshoot.jpg)
 
 ## Mise à jour
+ * V1.3.0 (28-03-2021)
+   * Recode avec @bugsounet/cvlc lib.
+   * Mise a jour du streamsConfig et du recipe
+   * Ajout de npmCheck
+   * Ajout de `npm run update`
+   * Ajout de `/TVol` , `/TVFull`, `/TVWin` sur telegramBot (controle du volume et de l'affichage)
+   * Ajout du control du volume via notification
+   * Ajout traduction EN
  * v1.2.0 (29-07-2020)
    * Ajout onStart pour demarrer une chaine au démarrage de MagicMirror
    * Ajout TelegramBot commande (TV)
@@ -95,6 +103,7 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
 {
   module: 'MMM-FreeboxTV',
   position: 'top_left',
+  configDeepMerge: true,
   config: {
     debug: false,
     autoReplay: true,
@@ -103,7 +112,12 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
     height: 216,
     onStart: null,
     onStartDelay: 10000,
-    streams: "streamsConfig.json"
+    streams: "streamsConfig.json",
+    volume : {
+      start: 100,
+      min: 30,
+      useLast: true
+    }
   }
 },
 ```
@@ -119,25 +133,69 @@ Ceci est la configuration par defaut si vous definissez aucune valeurs
 | onStartDelay | Delai du démarrage automatique en ms (utile: permet le chargement de tous les modules) | Nombre | 10000 |
 | streams | Nom du fichier contenant les streams des chaines (format JSON) | STRING | streamsConfig.json |
 
+### Champ `volume: {}`
+| Option  | Description | Type | Defaut |
+| ------- | --- | --- | --- |
+|-start| volume au démarrage TV (entre 0 et 100) | Nombre | 100|
+|-min| volume en cas d'utilisation de l'assistant | Nombre | 30|
+|-useLast| Utilise le dernier volume utilisé | Booléen | true |
+
+UseLast va permettre memoriser le dernier volume utilisé (avec la commande vocale ou avec `/TVol` de telegramBot), si vous activez la fonction.
+
 ## Demander un changement de chaine
 Activer votre assistant avec votre mot clé préféré et dites `TV <nom de la chaine>`<br>
 exemple: `Jarvis ... TV France 2`
 
+## Demander le controle du volume
+Activer votre assistant et dites `TV Volume <volume> %`<br>
+exemple: `jarvis ... TV Volume 50 %`
+
 ## Demander l'arrêt
 Activer votre assistant avec votre mot clé préféré et dites `TV stop`<br>
+
+## Affichage Plein écran / fenêtre
+Attention ces commandes sont uniquement disponible si le mode fullscreen est desactivée dans votre configuration
+
+### Plein écran
+Activer votre assistant avec votre mot clé préféré et dites `TV plein écran`<br>
+
+### Fenêtre
+Activer votre assistant avec votre mot clé préféré et dites `TV fenêtre`<br>
 
 ## TelegramBot
 une commande `/TV` a été créé:
  * `/TV <numéro de chaine` : zappe sur le numéro de la chaine demandé
- * `/TV`: stop le stream TV 
+ * `/TV`: stop le stream TV
+ * `/TVol`: contrôle du volume de la TV (entre 0 et 100)
+ * `/TVFull`: Affichage la TV en plein écran (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
+ * `/TVWin`: Affiche la TV dans une fenêtre (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
+
+## Update:
+utilisez la commande `npm run update` dans le repertoire du module
 
 ## Notes:
  * Si vous avez demandé l'affichage plein écran, le module TV ne s'affichera pas car il n'est pas utile ;)
  * les valeurs `width` et `height` ne sont pas utile en mode plein ecran
  * Vous pouvez ajouter vos propres streams dans `streamsConfig.json`
+ * En cas d'activation d'un assistant (MMM-GoogleAssistant ou MMM-Alexa), le son de la TV va se baisser
 
 ## Bugs connus
  * petit "bug" lors du démarrage de la video... elle est pas dans le cadre (**en cours de résolution**)
+ * le mode windows fonctionne uniquement avec `GL Driver` en mode `Legacy`
+
+## Options developpeur:
+Notification entrante:
+
+ * `TV-PLAY` payload: <numero de la chaine> -> permet de visualiser la chaine
+ * `TV-STOP` -> permet l'arrêt
+ * `TV-VOLUME` payload: <nombre entre 0 et 100> -> permet le changement du volume
+ * `TV-FULLSCREEN` -> Affichage la TV en plein écran (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
+ * `TV-WINDOWS` -> Affiche la TV dans une fenêtre (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
+
+## Le Support est maintenant disponible sur [ce forum](http://forum.bugsounet.fr)
+
+## English users: translation is available in wiki !
  
- ## Donation
+## Donation
  [Donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TTHRH94Y4KL36&source=url), si vous aimez ce module !
+
