@@ -195,3 +195,7 @@ Notification entrante:
 ## Le Support est maintenant disponible sur [ce forum](http://forum.bugsounet.fr)
 
 ## English users: translation is available in wiki !
+ 
+## Donation
+ [Donation](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TTHRH94Y4KL36&source=url), si vous aimez ce module !
+
