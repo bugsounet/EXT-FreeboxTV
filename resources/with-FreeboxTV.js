@@ -545,7 +545,7 @@ var recipe = {
     },
     "VOLUMETV": {
       notificationExec: {
-        notification: "FBTV_VOLUME",
+        notification: "TV-VOLUME",
         payload: (params) => {
           return params[1]
         }

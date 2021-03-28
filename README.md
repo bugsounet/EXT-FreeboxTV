@@ -44,7 +44,7 @@ Voici les chaines actuellement disponibles:
 ![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screenshoot.jpg)
 
 ## Mise à jour
- * V1.3.0 (21-03-2021)
+ * V1.3.0 (28-03-2021)
    * Recode avec @bugsounet/cvlc lib.
    * Mise a jour du streamsConfig et du recipe
    * Ajout de npmCheck
@@ -181,16 +181,17 @@ utilisez la commande `npm run update` dans le repertoire du module
 
 ## Bugs connus
  * petit "bug" lors du démarrage de la video... elle est pas dans le cadre (**en cours de résolution**)
+ * le mode windows fonctionne uniquement avec `GL Driver` en mode `Legacy`
 
 ## Options developpeur:
 Notification entrante:
 
  * `TV-PLAY` payload: <numero de la chaine> -> permet de visualiser la chaine
  * `TV-STOP` -> permet l'arrêt
- * `FBTV_VOLUME` payload: <nombre entre 0 et 100> -> permet le changement du volume
- * `FBTV_FULLSCREEN` -> Affichage la TV en plein écran (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
- * `FBTV_WINDOWS` -> Affiche la TV dans une fenêtre (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
+ * `TV-VOLUME` payload: <nombre entre 0 et 100> -> permet le changement du volume
+ * `TV-FULLSCREEN` -> Affichage la TV en plein écran (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
+ * `TV-WINDOWS` -> Affiche la TV dans une fenêtre (uniquement si le mode fullscreen, n'est pas activé dans votre configuration)
 
-## [Le Support est maintenant disponible sur le forum @bugsounet](http://forum.bugsounet.fr)
+## Le Support est maintenant disponible sur [ce forum](http://forum.bugsounet.fr)
 
-## English users: translation will be available in wiki !
+## English users: translation is available in wiki !

@@ -180,7 +180,7 @@ Module.register("MMM-FreeboxTV", {
         case "ASSISTANT_STANDBY":
           if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl ? this.volumeControl : this.config.volume.start)
           break
-        case "FBTV_VOLUME":
+        case "TV-VOLUME":
           let value = null
           if (payload) value = parseInt(payload)
           if (typeof value === "number" && value >= 0 && value <= 100) {
