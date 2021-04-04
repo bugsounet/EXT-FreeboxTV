@@ -7,7 +7,6 @@ Module.register("MMM-FreeboxTV", {
       fullcreen: false,
       width: 384,
       height: 216,
-      moduleOffset: 0,
       onStart: null,
       onStartDelay: 10000,
       streams: "streamsConfig.json",
@@ -109,23 +108,15 @@ Module.register("MMM-FreeboxTV", {
       if (this.FreeboxTV.playing) this.stopStream()
 
       var rect = canvas.getBoundingClientRect()
-      var offset = {}
       var payload = { name: channel }
-      if (typeof this.config.moduleOffset === "object") {
-        offset.left = ("left" in this.config.moduleOffset) ? this.config.moduleOffset.left : 0
-        offset.top = ("top" in this.config.moduleOffset) ? this.config.moduleOffset.top : 0
-      } else {
-        offset.left = this.config.moduleOffset
-        offset.top = this.config.moduleOffset
-      }
       var box = {};
       if (fullscreen) payload.fullscreen = true
       else {
         box = {
-          top: Math.round(rect.top + offset.top), // Compensate for Margins
-          right: Math.round(rect.right + offset.left), // Compensate for Margins
-          bottom: Math.round(rect.bottom + offset.top), // Compensate for Margins
-          left: Math.round(rect.left + offset.left) // Compensate for Margins
+          top: Math.round(rect.top), // Compensate for Margins
+          right: Math.round(rect.right), // Compensate for Margins
+          bottom: Math.round(rect.bottom), // Compensate for Margins
+          left: Math.round(rect.left) // Compensate for Margins
         }
       }
       payload.box = box
