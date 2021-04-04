@@ -5,36 +5,26 @@
  */
 .MMM-FreeboxTV .wrapper {
   position: relative;
-  left: 50%;
-  vertical-align: middle;
-  text-align: center;
-  -webkit-transform: translateX(-50%);
-  transform: translateX(-50%);
 }
 
 .MMM-FreeboxTV .innerWrapper {
   position: relative;
-  width: 352px;
-  height: 242px;
   border: 1px solid white;
   display: inline-block;
-  text-align: center;
-  margin: 2px;
   background-image: url(./resources/FreeboxTV.png);
-    background-size: 80%;
-    background-repeat: no-repeat;
-    background-position: 35px -7px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom;
 }
 
 .MMM-FreeboxTV .canvas {
   position: absolute;
+  width: 100%;
+  height: 100%;
   z-index: 10;
   left: 50%;
   top: 50%;
-  -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
 }
 
 .MMM-FreeboxTV .hidden {
