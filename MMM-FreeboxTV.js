@@ -122,7 +122,7 @@ Module.register("MMM-FreeboxTV", {
       payload.box = box
 
       if (!this.FreeboxTV.suspended) this.sendSocketNotification("PLAY", payload)
-      this.sendNotification("A2D_LOCK")
+      this.sendNotification("EXT_LOCK")
       this.FreeboxTV.playing = true
       this.FreeboxTV.channel = channel
     },
@@ -130,7 +130,7 @@ Module.register("MMM-FreeboxTV", {
     stopStream: function(force) {
       if (this.FreeboxTV.playing) {
         this.sendSocketNotification("STOP")
-        this.sendNotification("A2D_UNLOCK")
+        this.sendNotification("EXT_UNLOCK")
         this.FreeboxTV.playing = false
         if (!this.FreeboxTV.suspended) this.FreeboxTV.channel= null
       }
