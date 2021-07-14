@@ -45,8 +45,8 @@ Voici les chaines actuellement disponibles:
 
 
 ## Wiki, installation & guides
-  [FR]: http://wiki.bugsounet.fr/fr/MMM-FreeboxTV
-  [EN]: http://wiki.bugsounet.fr/en/MMM-FreeboxTV
+  * [FR](http://wiki.bugsounet.fr/fr/MMM-FreeboxTV)
+  * [EN](http://wiki.bugsounet.fr/en/MMM-FreeboxTV)
 
 ## Mise à jour
  * V1.3.0 (28-03-2021)
