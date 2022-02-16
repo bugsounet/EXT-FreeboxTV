@@ -1,6 +1,6 @@
-/* MMM-FreeboxTV */
+/* EXT-FreeboxTV */
 
-Module.register("MMM-FreeboxTV", {
+Module.register("EXT-FreeboxTV", {
     defaults: {
       debug: true,
       autoReplay: true,
@@ -149,6 +149,7 @@ Module.register("MMM-FreeboxTV", {
       switch(notification) {
         case "DOM_OBJECTS_CREATED":
           this.sendSocketNotification("CONFIG", this.config)
+          this.sendSocketNotification("EXT_HELLO", this.name)
           break
         case "TV-FULLSCREEN":
           if (!this.config.fullscreen) this.sendSocketNotification("TV-FULLSCREEN")
