@@ -1,5 +1,5 @@
 /* Magic Mirror
- * Node Helper: MMM-FreeboxTV
+ * Node Helper: EXT-FreeboxTV
  */
 
 var NodeHelper = require("node_helper")

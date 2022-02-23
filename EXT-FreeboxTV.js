@@ -1,4 +1,5 @@
 /* EXT-FreeboxTV */
+/** @todo: control if everything is ok **/
 
 Module.register("EXT-FreeboxTV", {
     defaults: {
@@ -48,7 +49,7 @@ Module.register("EXT-FreeboxTV", {
       console.log(`[FreeboxTV] ${this.name} has resumed... autoReplay: ${this.config.autoReplay}`)
       if (this.FreeboxTV.suspended && this.config.autoReplay && this.FreeboxTV.channel) {
           this.FreeboxTV.suspended = false
-          this.notificationReceived("TV-PLAY", this.FreeboxTV.channel)
+          this.notificationReceived("EXT_FreeboxTV-PLAY", this.FreeboxTV.channel)
       } else this.FreeboxTV.suspended = false
       if (typeof callback === "function") { callback() }
     },
@@ -70,7 +71,7 @@ Module.register("EXT-FreeboxTV", {
       var wrapper = document.createElement("div")
 
       wrapper.style.cssText = `width: ${this.moduleWidth}px; height:${this.moduleHeight}px`
-      wrapper.className = "MMM-FreeboxTV wrapper"
+      wrapper.className = "EXT-FreeboxTV wrapper"
       if (this.config.fullscreen) wrapper.classList.add("hidden")
       iw = this.getInnerWrapper()
       iw.appendChild(this.getCanvas())
@@ -89,13 +90,13 @@ Module.register("EXT-FreeboxTV", {
     getCanvas: function() {
       var canvas = document.createElement("canvas")
       canvas.id = "canvas_TV"
-      canvas.className = "MMM-FreeboxTV canvas"
+      canvas.className = "EXT-FreeboxTV canvas"
       return canvas
     },
 
     getInnerWrapper: function() {
       var innerWrapper = document.createElement("div")
-      innerWrapper.className = "MMM-FreeboxTV innerWrapper"
+      innerWrapper.className = "EXT-FreeboxTV innerWrapper"
       innerWrapper.style.cssText = this.getCanvasSize( { "width": this.config.width, "height": this.config.height })
       innerWrapper.id = "iw_TV"
       return innerWrapper
@@ -122,17 +123,18 @@ Module.register("EXT-FreeboxTV", {
       payload.box = box
 
       if (!this.FreeboxTV.suspended) this.sendSocketNotification("PLAY", payload)
-      this.sendNotification("EXT_LOCK")
+      //this.sendNotification("EXT_LOCK")
       this.FreeboxTV.playing = true
       this.FreeboxTV.channel = channel
+      this.sendNotification("EXT_FREEBOXTV-CONNECTED")
     },
 
     stopStream: function(force) {
       if (this.FreeboxTV.playing) {
         this.sendSocketNotification("STOP")
-        this.sendNotification("EXT_UNLOCK")
         this.FreeboxTV.playing = false
         if (!this.FreeboxTV.suspended) this.FreeboxTV.channel= null
+        this.sendNotification("EXT_FREEBOXTV-DISCONNECTED")
       }
       if (force) {
         this.FreeboxTV.playing = false
@@ -142,27 +144,29 @@ Module.register("EXT-FreeboxTV", {
     },
 
     getStyles: function() {
-      return ["MMM-FreeboxTV.css"]
+      return ["EXT-FreeboxTV.css"]
     },
 
     notificationReceived: function(notification, payload) {
       switch(notification) {
         case "DOM_OBJECTS_CREATED":
           this.sendSocketNotification("CONFIG", this.config)
-          this.sendSocketNotification("EXT_HELLO", this.name)
+          this.sendNotification("EXT_HELLO", this.name)
           break
-        case "TV-FULLSCREEN":
+        case "EXT_FreeboxTV-FULLSCREEN":
           if (!this.config.fullscreen) this.sendSocketNotification("TV-FULLSCREEN")
           break
-        case "TV-WINDOWS":
+        case "EXT_FreeboxTV-WINDOWS":
           if (!this.config.fullscreen) this.sendSocketNotification("TV-WINDOWS")
           break
-        case "TV-PLAY":
+        case "EXT_FreeboxTV-PLAY":
           this.playStream(payload,this.config.fullscreen)
           break
-        case "TV-STOP":
+        case "EXT_STOP":
+        case "EXT_FreeboxTV-STOP":
           this.stopStream(true)
           break
+        /*
         case "ALEXA_ACTIVATE":
         case "ASSISTANT_LISTEN":
         case "ASSISTANT_THINK":
@@ -172,7 +176,8 @@ Module.register("EXT-FreeboxTV", {
         case "ASSISTANT_STANDBY":
           if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl ? this.volumeControl : this.config.volume.start)
           break
-        case "TV-VOLUME":
+        */
+        case "EXT_FreeboxTV-VOLUME":
           let value = null
           if (payload) value = parseInt(payload)
           if (typeof value === "number" && value >= 0 && value <= 100) {
