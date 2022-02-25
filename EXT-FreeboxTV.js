@@ -15,11 +15,6 @@ Module.register("EXT-FreeboxTV", {
         start: 100,
         min: 30,
         useLast: true
-      },
-      NPMCheck: {
-        useChecker: true,
-        delay: 10 * 60 * 1000,
-        useAlert: true
       }
     },
 
@@ -201,21 +196,6 @@ Module.register("EXT-FreeboxTV", {
           else console.log("[FreeboxTV] onStart: Channel not found", this.config.onStart)
         }
         console.log("[FreeboxTV] Ready, the show must go on!")
-      }
-      if(notification == "NPM_UPDATE") {
-        if (payload && payload.length > 0) {
-          if (this.config.NPMCheck.useAlert) {
-            payload.forEach(npm => {
-              this.sendNotification("SHOW_ALERT", {
-                type: "notification" ,
-                message: "[NPM] " + npm.library + " v" + npm.installed +" -> v" + npm.latest,
-                title: this.translate("UPDATE_NOTIFICATION_MODULE", { MODULE_NAME: npm.module }),
-                timer: this.config.NPMCheck.delay - 2000
-              })
-            })
-          }
-          this.sendNotification("NPM_UPDATE", payload)
-        }
       }
     },
 

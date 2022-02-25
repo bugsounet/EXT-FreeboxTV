@@ -14,7 +14,6 @@
     "url": "https://github.com/bugsounet/EXT-FreeboxTV"
   },
   "dependencies": {
-    "@bugsounet/cvlc": "^1.0.2",
-    "@bugsounet/npmcheck": "^0.9.93"
+    "@bugsounet/cvlc": "^1.0.2"
   }
 }

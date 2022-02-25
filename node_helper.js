@@ -7,7 +7,6 @@ const fs = require('fs')
 const path = require("path")
 const child_process = require('child_process')
 var Cvlc = require('@bugsounet/cvlc')
-const npmCheck = require("@bugsounet/npmcheck")
 const environ = Object.assign(process.env, { DISPLAY: ":0" })
 var log = (...args) => { /* do nothing */ }
 
@@ -27,15 +26,6 @@ module.exports = NodeHelper.create({
         this.config = payload
         this.scanStreamsConfig()
         if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
-        if (this.config.NPMCheck.useChecker) {
-          var cfg = {
-            dirName: __dirname,
-            moduleName: this.name,
-            timer: this.config.NPMCheck.delay,
-            debug: this.config.debug
-          }
-          this.Checker= new npmCheck(cfg, update => { this.sendSocketNotification("NPM_UPDATE", update)} )
-        }
         console.log("[FreeboxTV] FreeboxTV is initialized.")
         log("Config:", this.config)
         this.sendSocketNotification("INITIALIZED", this.FreeboxTV)
