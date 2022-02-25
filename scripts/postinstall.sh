@@ -21,12 +21,11 @@ Installer_dir="$(Installer_get_current_dir)"
 cd "$Installer_dir"
 
 source utils.sh
-
-# module name
-Installer_module="MMM-FreeboxTV"
+cd..
 
 # check version in package.json file
-Installer_version="$(cat ../package.json | grep version | cut -c15-19 2>/dev/null)"
+Installer_version="$(grep -Eo '\"version\"[^,]*' ./package.json | grep -Eo '[^:]*$' | awk  -F'\"' '{print $2}')"
+Installer_module="$(grep -Eo '\"name\"[^,]*' ./package.json | grep -Eo '[^:]*$' | awk  -F'\"' '{print $2}')"
 
 # Let's start !
 Installer_info "Welcome to $Installer_module v$Installer_version"
@@ -59,8 +58,5 @@ dependencies=(devilspie2 vlc)
 Installer_check_dependencies
 Installer_success "All Dependencies needed are installed !"
 echo
-
-Installer_info "Copy recipe 'with-FreeboxTV.js' to MMM-GoogleAssistant recipe directory"
-cp -f ../resources/with-FreeboxTV.js ../../MMM-GoogleAssistant/recipes && Installer_success "Done"
 
 Installer_info "$Installer_module is now installed !"

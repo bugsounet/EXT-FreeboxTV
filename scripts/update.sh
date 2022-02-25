@@ -1,10 +1,9 @@
 #!/bin/bash
-# +-------------------+
-# | FreeboxTV updater |
-# | by Bugsounet      |
-# +-------------------+
-# get the installer directory
+# +---------+
+# | updater |
+# +---------+
 
+# get the installer directory
 Installer_get_current_dir () {
   SOURCE="${BASH_SOURCE[0]}"
   while [ -h "$SOURCE" ]; do
@@ -20,20 +19,27 @@ Installer_dir="$(Installer_get_current_dir)"
 # move to installler directory
 cd "$Installer_dir"
 source utils.sh
-Installer_info "Welcome to MMM-FreeboxTV updater !"
+
+# Go back to module root
+cd ..
+
+Installer_info "Welcome to EXT-FreeboxTV updater !"
 echo
 
-cd ~/MagicMirror/modules/MMM-FreeboxTV
 # deleting package.json because npm install add/update package
 rm -f package-lock.json
+
 Installer_info "Updating..."
+
 git reset --hard HEAD
 git pull
 
+echo
 Installer_info "Deleting ALL @bugsounet libraries..."
-cd ~/MagicMirror/modules/MMM-FreeboxTV/node_modules
-rm -rf @bugsounet
+rm -rf node_modules/@bugsounet
 
+echo
 Installer_info "Ready for Installing..."
+
 # launch installer
 npm install
