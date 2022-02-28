@@ -22,7 +22,7 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification, payload) {
     switch(notification) {
       case "CONFIG":
-        console.log("[FreeboxTV] MMM-FreeboxTV Version:",  require('./package.json').version)
+        console.log("[FreeboxTV] EXT-FreeboxTV Version:",  require('./package.json').version)
         this.config = payload
         this.scanStreamsConfig()
         if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }

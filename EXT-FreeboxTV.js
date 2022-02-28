@@ -1,15 +1,11 @@
 /* EXT-FreeboxTV */
-/** @todo: control if everything is ok **/
 
 Module.register("EXT-FreeboxTV", {
     defaults: {
-      debug: true,
-      autoReplay: true,
-      fullcreen: false,
+      debug: false,
+      fullscreen: false,
       width: 384,
       height: 216,
-      onStart: null,
-      onStartDelay: 10000,
       streams: "streamsConfig.json",
       volume: {
         start: 100,
@@ -35,16 +31,18 @@ Module.register("EXT-FreeboxTV", {
      * This method is called when a module is hidden.
      */
     suspend: function() {
+      if (this.config.fullscreen) return
       console.log(`[FreeboxTV] ${this.name} is suspended...`)
       this.FreeboxTV.suspended = true
       this.stopStream()
     },
 
     resumed: function(callback) {
-      console.log(`[FreeboxTV] ${this.name} has resumed... autoReplay: ${this.config.autoReplay}`)
-      if (this.FreeboxTV.suspended && this.config.autoReplay && this.FreeboxTV.channel) {
+      if (this.config.fullscreen) return
+      console.log(`[FreeboxTV] ${this.name} has resumed...`)
+      if (this.FreeboxTV.suspended && this.FreeboxTV.channel) {
           this.FreeboxTV.suspended = false
-          this.notificationReceived("EXT_FreeboxTV-PLAY", this.FreeboxTV.channel)
+          this.notificationReceived("EXT_FREEBOXTV-PLAY", this.FreeboxTV.channel)
       } else this.FreeboxTV.suspended = false
       if (typeof callback === "function") { callback() }
     },
@@ -118,7 +116,6 @@ Module.register("EXT-FreeboxTV", {
       payload.box = box
 
       if (!this.FreeboxTV.suspended) this.sendSocketNotification("PLAY", payload)
-      //this.sendNotification("EXT_LOCK")
       this.FreeboxTV.playing = true
       this.FreeboxTV.channel = channel
       this.sendNotification("EXT_FREEBOXTV-CONNECTED")
@@ -146,33 +143,24 @@ Module.register("EXT-FreeboxTV", {
       switch(notification) {
         case "DOM_OBJECTS_CREATED":
           this.sendSocketNotification("CONFIG", this.config)
+          break
+        case "GA_READY":
           this.sendNotification("EXT_HELLO", this.name)
           break
-        case "EXT_FreeboxTV-FULLSCREEN":
+        case "EXT_FREEBOXTV-FULLSCREEN":
           if (!this.config.fullscreen) this.sendSocketNotification("TV-FULLSCREEN")
           break
-        case "EXT_FreeboxTV-WINDOWS":
+        case "EXT_FREEBOXTV-WINDOWS":
           if (!this.config.fullscreen) this.sendSocketNotification("TV-WINDOWS")
           break
-        case "EXT_FreeboxTV-PLAY":
+        case "EXT_FREEBOXTV-PLAY":
           this.playStream(payload,this.config.fullscreen)
           break
         case "EXT_STOP":
-        case "EXT_FreeboxTV-STOP":
+        case "EXT_FREEBOXTV-STOP":
           this.stopStream(true)
           break
-        /*
-        case "ALEXA_ACTIVATE":
-        case "ASSISTANT_LISTEN":
-        case "ASSISTANT_THINK":
-          if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.config.volume.min)
-          break
-        case "ALEXA_STANDBY":
-        case "ASSISTANT_STANDBY":
-          if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl ? this.volumeControl : this.config.volume.start)
-          break
-        */
-        case "EXT_FreeboxTV-VOLUME":
+        case "EXT_FREEBOXTV-VOLUME":
           let value = null
           if (payload) value = parseInt(payload)
           if (typeof value === "number" && value >= 0 && value <= 100) {
@@ -182,19 +170,18 @@ Module.register("EXT-FreeboxTV", {
             console.log("[FreeboxTV] Volume:", this.volumeControl, "[" + value + "]")
           } else console.log("[FreeboxTV] Volume Control wrong value:", payload)
           break
+        case "EXT-FREEBOXTV-VOLUME_MIN":
+          if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.config.volume.min)
+          break
+        case "EXT-FREEBOXTV-VOLUME_MAX":
+          if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl ? this.volumeControl : this.config.volume.start)
+          break
       }
     },
 
     socketNotificationReceived: function(notification, payload) {
       if (notification == "INITIALIZED") {
         this.Channels = payload
-        if (this.config.onStart) {
-          if (this.ChannelsCheck(this.config.onStart)) {
-            console.log("[FreeboxTV] onStart: Launching: " + this.config.onStart + " in " + this.config.onStartDelay / 1000 + " Sec")
-            setTimeout(() => this.playStream(this.config.onStart,this.config.fullscreen), this.config.onStartDelay)
-          }
-          else console.log("[FreeboxTV] onStart: Channel not found", this.config.onStart)
-        }
         console.log("[FreeboxTV] Ready, the show must go on!")
       }
     },
@@ -235,7 +222,6 @@ Module.register("EXT-FreeboxTV", {
     TV: function(command, handler) {
       if (handler.args) {
         if (this.ChannelsCheck(handler.args)) {
-          this.sendNotification("WAKEUP")
           this.playStream(handler.args,this.config.fullscreen)
           return handler.reply("TEXT", this.translate("FBTV_TV_DISPLAY") + handler.args)
         } else return handler.reply("TEXT", this.translate("FBTV_TV_NOTFOUND") + handler.args)
