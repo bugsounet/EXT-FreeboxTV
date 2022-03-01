@@ -144,7 +144,7 @@ Module.register("EXT-FreeboxTV", {
         case "DOM_OBJECTS_CREATED":
           this.sendSocketNotification("CONFIG", this.config)
           break
-        case "GA_READY":
+        case "GAv4_READY":
           if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
           break
         case "EXT_FREEBOXTV-FULLSCREEN":
