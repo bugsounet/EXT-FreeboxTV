@@ -4,8 +4,6 @@ Module.register("EXT-FreeboxTV", {
     defaults: {
       debug: false,
       fullscreen: false,
-      width: 384,
-      height: 216,
       streams: "streamsConfig.json",
       volume: {
         start: 100,
@@ -18,125 +16,54 @@ Module.register("EXT-FreeboxTV", {
       this.FreeboxTV = {
         playing: false,
         channel: null,
-        suspended: false
+        last: 9999
       }
       this.volumeControl= null
-      this.moduleWidth= this.config.width + 6
-      this.moduleHeight= this.config.height + 6
-      this.Channels = {}
+      this.Channels = []
       this.initializeVolume()
-    },
-
-    /* suspend()
-     * This method is called when a module is hidden.
-     */
-    suspend: function() {
-      if (this.config.fullscreen) return
-      console.log(`[FreeboxTV] ${this.name} is suspended...`)
-      this.FreeboxTV.suspended = true
-      this.stopStream()
-    },
-
-    resumed: function(callback) {
-      if (this.config.fullscreen) return
-      console.log(`[FreeboxTV] ${this.name} has resumed...`)
-      if (this.FreeboxTV.suspended && this.FreeboxTV.channel) {
-          this.FreeboxTV.suspended = false
-          this.notificationReceived("EXT_FREEBOXTV-PLAY", this.FreeboxTV.channel)
-      } else this.FreeboxTV.suspended = false
-      if (typeof callback === "function") { callback() }
-    },
-
-    // Overwrite the module show method to force a callback.
-    show: function(speed, callback, options) {
-      if (typeof callback === "object") {
-        options = callback
-        callback = function() {}
-      }
-
-      newCallback = () => { this.resumed(callback) }
-      options = options || {}
-
-      MM.showModule(this, speed, newCallback, options)
     },
 
     getDom: function() {
       var wrapper = document.createElement("div")
-
-      wrapper.style.cssText = `width: ${this.moduleWidth}px; height:${this.moduleHeight}px`
-      wrapper.className = "EXT-FreeboxTV wrapper"
-      if (this.config.fullscreen) wrapper.classList.add("hidden")
-      iw = this.getInnerWrapper()
-      iw.appendChild(this.getCanvas())
-      wrapper.appendChild(iw)
-
+      wrapper.classList.add("hidden")
       return wrapper
     },
 
-    getCanvasSize: function(streamConfig) {
-      var s = ''
-      if (typeof streamConfig.width !== "undefined") { s += "width: " + streamConfig.width + "px; "; }
-      if (typeof streamConfig.height !== "undefined") { s += "height: " + streamConfig.height + "px; line-height: " + streamConfig.height + ";"; }
-      return s
-    },
-
-    getCanvas: function() {
-      var canvas = document.createElement("canvas")
-      canvas.id = "canvas_TV"
-      canvas.className = "EXT-FreeboxTV canvas"
-      return canvas
-    },
-
-    getInnerWrapper: function() {
-      var innerWrapper = document.createElement("div")
-      innerWrapper.className = "EXT-FreeboxTV innerWrapper"
-      innerWrapper.style.cssText = this.getCanvasSize( { "width": this.config.width, "height": this.config.height })
-      innerWrapper.id = "iw_TV"
-      return innerWrapper
-    },
-
-    playStream: function(channel,fullscreen = false) {
-      var canvasId = "canvas_TV"
-      var canvas = document.getElementById(canvasId)
-
+    playStream: function(channel) {
+      if (!this.ChannelsCheck(channel)) return console.log("channel not found")
       if (this.FreeboxTV.playing) this.stopStream()
-
-      var rect = canvas.getBoundingClientRect()
-      var payload = { name: channel }
-      var box = {};
-      if (fullscreen) payload.fullscreen = true
-      else {
-        box = {
-          top: Math.round(rect.top), // Compensate for Margins
-          right: Math.round(rect.right), // Compensate for Margins
-          bottom: Math.round(rect.bottom), // Compensate for Margins
-          left: Math.round(rect.left) // Compensate for Margins
-        }
-      }
-      payload.box = box
-
-      if (!this.FreeboxTV.suspended) this.sendSocketNotification("PLAY", payload)
+      this.sendSocketNotification("PLAY", channel)
       this.FreeboxTV.playing = true
       this.FreeboxTV.channel = channel
+      this.FreeboxTV.last = this.Channels.indexOf(channel)
       this.sendNotification("EXT_FREEBOXTV-CONNECTED")
+    },
+
+    playNextStream: function() {
+      var last = this.FreeboxTV.last
+      var channel = this.Channels.next(last)
+      if (!channel) channel = this.Channels[0]
+      this.playStream(channel)
+    },
+
+    playPreviousStream: function() {
+      var last = this.FreeboxTV.last
+      var channel = this.Channels.prev(last)
+      if (!channel) channel = this.Channels[this.Channels.length-1]
+      this.playStream(channel)  
     },
 
     stopStream: function(force) {
       if (this.FreeboxTV.playing) {
         this.sendSocketNotification("STOP")
         this.FreeboxTV.playing = false
-        if (!this.FreeboxTV.suspended) this.FreeboxTV.channel= null
+        this.FreeboxTV.channel= null
         this.sendNotification("EXT_FREEBOXTV-DISCONNECTED")
       }
       if (force) {
         this.FreeboxTV.playing = false
         this.FreeboxTV.channel = null
-        this.FreeboxTV.suspended = false
       }
-    },
-
-    getStyles: function() {
-      return ["EXT-FreeboxTV.css"]
     },
 
     notificationReceived: function(notification, payload, sender) {
@@ -147,14 +74,14 @@ Module.register("EXT-FreeboxTV", {
         case "GAv4_READY":
           if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
           break
-        case "EXT_FREEBOXTV-FULLSCREEN":
-          if (!this.config.fullscreen) this.sendSocketNotification("TV-FULLSCREEN")
-          break
-        case "EXT_FREEBOXTV-WINDOWS":
-          if (!this.config.fullscreen) this.sendSocketNotification("TV-WINDOWS")
-          break
         case "EXT_FREEBOXTV-PLAY":
-          this.playStream(payload,this.config.fullscreen)
+          this.playStream(payload)
+          break
+        case "EXT_FREEBOXTV-NEXT":
+          this.playNextStream(payload)
+          break
+        case "EXT_FREEBOXTV-PREVIOUS":
+          this.playPreviousStream(payload)
           break
         case "EXT_STOP":
         case "EXT_FREEBOXTV-STOP":
@@ -182,6 +109,12 @@ Module.register("EXT-FreeboxTV", {
     socketNotificationReceived: function(notification, payload) {
       if (notification == "INITIALIZED") {
         this.Channels = payload
+        var iterifyArr = function (arr) {
+         arr.next = (function (cur) { return (++cur >= this.length) ? false : this[cur]; })
+         arr.prev = (function (cur) { return (--cur < 0) ? false : this[cur]; })
+         return arr
+        }
+        iterifyArr(this.Channels)
         console.log("[FreeboxTV] Ready, the show must go on!")
       }
     },
@@ -205,24 +138,12 @@ Module.register("EXT-FreeboxTV", {
         description: this.translate("FBTV_TVOL"),
         callback: "TVol"
       })
-      if (!this.config.fullscreen) {
-        commander.add({
-          command: "TVFull",
-          description: this.translate("FBTV_TVFULL"),
-          callback: "TVFull"
-        })
-        commander.add({
-          command: "TVWin",
-          description: this.translate("FBTV_TVWIN"),
-          callback: "TVWin"
-        })
-      }
     },
 
     TV: function(command, handler) {
       if (handler.args) {
         if (this.ChannelsCheck(handler.args)) {
-          this.playStream(handler.args,this.config.fullscreen)
+          this.playStream(handler.args)
           return handler.reply("TEXT", this.translate("FBTV_TV_DISPLAY") + handler.args)
         } else return handler.reply("TEXT", this.translate("FBTV_TV_NOTFOUND") + handler.args)
       }
@@ -245,22 +166,8 @@ Module.register("EXT-FreeboxTV", {
       else return handler.reply("TEXT", this.translate("FBTV_TVOL_RULE"))
     },
 
-    TVFull: function(command, handler) {
-      if (this.FreeboxTV.playing) {
-        this.sendSocketNotification("TV-FULLSCREEN")
-        handler.reply("TEXT", this.translate("FBTV_TV_FULL"))
-      } else handler.reply("TEXT", this.translate("FBTV_TV_ERR"))
-    },
-
-    TVWin: function(command, handler) {
-      if (this.FreeboxTV.playing) {
-        this.sendSocketNotification("TV-WINDOWS")
-        handler.reply("TEXT", this.translate("FBTV_TV_WIN"))
-      } else handler.reply("TEXT", this.translate("FBTV_TV_ERR"))
-    },
-
     ChannelsCheck: function (channel) {
-      if (this.Channels.hasOwnProperty(channel)) return true
+      if (this.Channels.indexOf(channel) > -1) return true
       return false
     },
 
