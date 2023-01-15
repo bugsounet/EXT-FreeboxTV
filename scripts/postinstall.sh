@@ -53,9 +53,9 @@ echo
 
 # check dependencies
 Installer_info "Checking all dependencies..."
-dependencies=(devilspie2 vlc)
+dependencies=(vlc)
 
-Installer_check_dependencies
+Installer_update_dependencies
 Installer_success "All Dependencies needed are installed !"
 echo
 
