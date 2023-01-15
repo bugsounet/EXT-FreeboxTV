@@ -75,7 +75,7 @@ module.exports = NodeHelper.create({
         if (this.ID == 0) {
           log("Finish !")
           this.stream = null
-          this.sendSocketNotification("END")
+          this.sendSocketNotification("ENDED")
         }
       }
     )
