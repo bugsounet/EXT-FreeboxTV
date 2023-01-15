@@ -4,14 +4,6 @@
 
 var recipe = {
   transcriptionHooks: {
-    "TVFULL": {
-      pattern: "TV plein écran",
-      command: "TVFull"
-    },
-    "TVWIN": {
-      pattern: "TV fenêtre",
-      command: "TVWin"
-    },
     "VOLUMETV": {
       pattern: "TV volume (.*)",
       command: "VOLUMETV"
@@ -67,10 +59,6 @@ var recipe = {
     "gulli": {
       pattern: "TV gulli",
       command: "gulli"
-    },
-    "culturebox": {
-      pattern: "TV Culturebox",
-      command: "culturebox"
     },
     "equipe": {
       pattern: "TV l'équipe",
@@ -132,21 +120,9 @@ var recipe = {
       pattern: "TV Automoto",
       command: "automoto"
     },
-    "scienceetvietv": {
-      pattern: "TV Science et Vie",
-      command: "scienceetvietv"
-    },
     "rfmtv": {
       pattern: "TV RFM TV",
       command: "rfmtv"
-    },
-    "mcmtop": {
-      pattern: "TV MCM top",
-      command: "mcmtop"
-    },
-    "bfmbusiness": {
-      pattern: "TV BFM Business",
-      command: "bfmbusiness"
     }
   },
 
@@ -154,10 +130,7 @@ var recipe = {
     "france2": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 2
-          return params
-        }
+        payload: "France2"
       },
       soundExec: {
         chime: "open"
@@ -166,10 +139,7 @@ var recipe = {
     "france3": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 3
-          return params
-        }
+        payload: "France3"
       },
       soundExec: {
         chime: "open"
@@ -178,10 +148,7 @@ var recipe = {
     "france4": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 14
-          return params
-        }
+        payload: "France4"
       },
       soundExec: {
         chime: "open"
@@ -190,10 +157,7 @@ var recipe = {
     "france5": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 5
-          return params
-        }
+        payload: "France5"
       },
       soundExec: {
         chime: "open"
@@ -202,10 +166,7 @@ var recipe = {
     "arte": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 7
-          return params
-        }
+        payload: "ARTE"
       },
       soundExec: {
         chime: "open"
@@ -214,10 +175,7 @@ var recipe = {
     "c8": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 8
-          return params
-        }
+        payload: "C8"
       },
       soundExec: {
         chime: "open"
@@ -226,10 +184,8 @@ var recipe = {
     "nrj12": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 12
-          return params
-        }
+        payload: "NRJ12"
+
       },
       soundExec: {
         chime: "open"
@@ -238,10 +194,7 @@ var recipe = {
     "lcp": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 13
-          return params
-        }
+        payload: "LCP"
       },
       soundExec: {
         chime: "open"
@@ -250,10 +203,7 @@ var recipe = {
     "bfmtv": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 15
-          return params
-        }
+        payload: "BFMTV"
       },
       soundExec: {
         chime: "open"
@@ -262,10 +212,7 @@ var recipe = {
     "cnews": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 16
-          return params
-        }
+        payload: "CNews"
       },
       soundExec: {
         chime: "open"
@@ -274,10 +221,7 @@ var recipe = {
     "cstar": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 17
-          return params
-        }
+        payload: "CStar"
       },
       soundExec: {
         chime: "open"
@@ -286,22 +230,7 @@ var recipe = {
     "gulli": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 18
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
-    "culturebox": {
-      notificationExec: {
-        notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 19
-          return params
-        }
+        payload: "Gulli"
       },
       soundExec: {
         chime: "open"
@@ -310,10 +239,7 @@ var recipe = {
     "equipe": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 21
-          return params
-        }
+        payload: "Equipe"
       },
       soundExec: {
         chime: "open"
@@ -322,10 +248,7 @@ var recipe = {
     "rmcstory": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 23
-          return params
-        }
+        payload: "RMCStory"
       },
       soundExec: {
         chime: "open"
@@ -334,10 +257,7 @@ var recipe = {
     "rmcdecouverte": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 24
-          return params
-        }
+        payload: "RMCDecouverte"
       },
       soundExec: {
         chime: "open"
@@ -346,10 +266,7 @@ var recipe = {
     "cherie25": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 25
-          return params
-        }
+        payload: "Cherie25"
       },
       soundExec: {
         chime: "open"
@@ -358,10 +275,7 @@ var recipe = {
     "franceinfo": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 27
-          return params
-        }
+        payload: "FranceInfo"
       },
       soundExec: {
         chime: "open"
@@ -370,10 +284,7 @@ var recipe = {
     "parispremiere": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 28
-          return params
-        }
+        payload: "ParisPremiere"
       },
       soundExec: {
         chime: "open"
@@ -382,10 +293,7 @@ var recipe = {
     "rtl9": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 29
-          return params
-        }
+        payload: "RTL9"
       },
       soundExec: {
         chime: "open"
@@ -394,10 +302,7 @@ var recipe = {
     "gameone": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 50
-          return params
-        }
+        payload: "GameOne"
       },
       soundExec: {
         chime: "open"
@@ -406,10 +311,7 @@ var recipe = {
     "AB1": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 51
-          return params
-        }
+        payload: "AB1"
       },
       soundExec: {
         chime: "open"
@@ -418,10 +320,7 @@ var recipe = {
     "teva": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 53
-          return params
-        }
+        payload: "TEVA"
       },
       soundExec: {
         chime: "open"
@@ -430,10 +329,7 @@ var recipe = {
     "m6music": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 64
-          return params
-        }
+        payload: "M6Music"
       },
       soundExec: {
         chime: "open"
@@ -442,10 +338,7 @@ var recipe = {
     "mcm": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 87
-          return params
-        }
+        payload: "MCM"
       },
       soundExec: {
         chime: "open"
@@ -454,10 +347,7 @@ var recipe = {
     "mangas": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 90
-          return params
-        }
+        payload: "Mangas"
       },
       soundExec: {
         chime: "open"
@@ -466,10 +356,7 @@ var recipe = {
     "equidia": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 176
-          return params
-        }
+        payload: "Equidia"
       },
       soundExec: {
         chime: "open"
@@ -478,22 +365,7 @@ var recipe = {
     "automoto": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 180
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
-    "scienceetvietv": {
-      notificationExec: {
-        notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 207
-          return params
-        }
+        payload: "AutoMoto"
       },
       soundExec: {
         chime: "open"
@@ -502,34 +374,7 @@ var recipe = {
     "rfmtv": {
       notificationExec: {
         notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 261
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
-    "mcmtop": {
-      notificationExec: {
-        notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 271
-          return params
-        }
-      },
-      soundExec: {
-        chime: "open"
-      }
-    },
-    "bfmbusiness": {
-      notificationExec: {
-        notification: "EXT_FREEBOXTV-PLAY",
-        payload: (params) => {
-          params = 347
-          return params
-        }
+        payload: "RFMTV"
       },
       soundExec: {
         chime: "open"
@@ -549,16 +394,6 @@ var recipe = {
         payload: (params) => {
           return params[1]
         }
-      }
-    },
-    "TVFull": {
-      notificationExec: {
-        notification: "EXT_FreeboxTV-FULLSCREEN"
-      }
-    },
-    "TVWin": {
-      notificationExec: {
-        notification: "EXT_FreeboxTV-WINDOWS"
       }
     }
   }
