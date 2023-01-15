@@ -75,7 +75,7 @@ Module.register("EXT-FreeboxTV", {
           if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
           break
         case "EXT_FREEBOXTV-PLAY":
-          this.playStream(payload)
+          this.playStream(payload ? payload : this.Channels[0])
           break
         case "EXT_FREEBOXTV-NEXT":
           this.playNextStream(payload)
