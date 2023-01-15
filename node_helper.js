@@ -5,7 +5,6 @@
 var NodeHelper = require("node_helper")
 const fs = require('fs')
 const path = require("path")
-const child_process = require('child_process')
 var Cvlc = require('@bugsounet/cvlc')
 var log = (...args) => { /* do nothing */ }
 
@@ -56,7 +55,7 @@ module.exports = NodeHelper.create({
     if (!this.FreeboxTV[name]) return log ("Channel not found:", name)
     var link = this.FreeboxTV[name]
     // Generate the VLC window
-    var args = ['--video-on-top', "--no-video-title-show", "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV", "--fullscreen"]
+    var args = ["--video-on-top", "--no-video-title-show", "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV", "--fullscreen"]
 
     this.stream = new Cvlc(args)
     log("Starting channel:", name)
@@ -64,7 +63,10 @@ module.exports = NodeHelper.create({
       link,
       ()=> {
         log("Found link:", link)
-         if (this.stream) this.volume(this.volumeControl ? this.volumeControl: this.config.volume.start)
+         if (this.stream) {
+           this.volume(this.volumeControl ? this.volumeControl: this.config.volume.start)
+           this.sendSocketNotification("STARTED")
+        }
       },
       ()=> {
         this.ID--
@@ -73,6 +75,7 @@ module.exports = NodeHelper.create({
         if (this.ID == 0) {
           log("Finish !")
           this.stream = null
+          this.sendSocketNotification("END")
         }
       }
     )

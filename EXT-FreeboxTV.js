@@ -3,7 +3,6 @@
 Module.register("EXT-FreeboxTV", {
     defaults: {
       debug: false,
-      fullscreen: false,
       streams: "streamsConfig.json",
       volume: {
         start: 100,
@@ -30,25 +29,23 @@ Module.register("EXT-FreeboxTV", {
     },
 
     playStream: function(channel) {
-      if (!this.ChannelsCheck(channel)) return console.log("channel not found")
+      if (!this.ChannelsCheck(channel)) return console.log("[FreeboxTV] channel not found")
       if (this.FreeboxTV.playing) this.stopStream()
       this.sendSocketNotification("PLAY", channel)
-      this.FreeboxTV.playing = true
       this.FreeboxTV.channel = channel
       this.FreeboxTV.last = this.Channels.indexOf(channel)
-      this.sendNotification("EXT_FREEBOXTV-CONNECTED")
     },
 
     playNextStream: function() {
-      var last = this.FreeboxTV.last
-      var channel = this.Channels.next(last)
+      let last = this.FreeboxTV.last
+      let channel = this.Channels.next(last)
       if (!channel) channel = this.Channels[0]
       this.playStream(channel)
     },
 
     playPreviousStream: function() {
-      var last = this.FreeboxTV.last
-      var channel = this.Channels.prev(last)
+      let last = this.FreeboxTV.last
+      let channel = this.Channels.prev(last)
       if (!channel) channel = this.Channels[this.Channels.length-1]
       this.playStream(channel)  
     },
@@ -56,9 +53,7 @@ Module.register("EXT-FreeboxTV", {
     stopStream: function(force) {
       if (this.FreeboxTV.playing) {
         this.sendSocketNotification("STOP")
-        this.FreeboxTV.playing = false
         this.FreeboxTV.channel= null
-        this.sendNotification("EXT_FREEBOXTV-DISCONNECTED")
       }
       if (force) {
         this.FreeboxTV.playing = false
@@ -107,22 +102,25 @@ Module.register("EXT-FreeboxTV", {
     },
 
     socketNotificationReceived: function(notification, payload) {
-      if (notification == "INITIALIZED") {
-        this.Channels = payload
-        var iterifyArr = function (arr) {
-         arr.next = (function (cur) { return (++cur >= this.length) ? false : this[cur]; })
-         arr.prev = (function (cur) { return (--cur < 0) ? false : this[cur]; })
-         return arr
-        }
-        iterifyArr(this.Channels)
-        console.log("[FreeboxTV] Ready, the show must go on!")
-      }
-    },
-
-    getTranslations: function() {
-      return {
-        en: "translations/en.json",
-        fr: "translations/fr.json",
+      switch(notification) {
+        case "INITIALIZED":
+          this.Channels = payload
+          var iterifyArr = function (arr) {
+            arr.next = (function (cur) { return (++cur >= this.length) ? false : this[cur]; })
+            arr.prev = (function (cur) { return (--cur < 0) ? false : this[cur]; })
+            return arr
+          }
+          iterifyArr(this.Channels)
+          console.log("[FreeboxTV] Ready, the show must go on!")
+          break
+        case "ENDED":
+          this.FreeboxTV.playing = false
+          this.sendNotification("EXT_FREEBOXTV-DISCONNECTED")
+          break
+        case "STARTED":
+          this.FreeboxTV.playing = true
+          this.sendNotification("EXT_FREEBOXTV-CONNECTED")
+          break
       }
     },
 
@@ -130,13 +128,18 @@ Module.register("EXT-FreeboxTV", {
     getCommands: function(commander) {
       commander.add({
         command: "TV",
-        description: this.translate("FBTV_TV"),
+        description: "Lance un chaine de FreeboxTV.",
         callback: "TV"
       })
       commander.add({
         command: "TVol",
-        description: this.translate("FBTV_TVOL"),
+        description: "Contrôle du volume de la TV.",
         callback: "TVol"
+      })
+      commander.add({
+        command: "TVList",
+        description: "Liste des chaines",
+        callback: "TVList"
       })
     },
 
@@ -144,11 +147,11 @@ Module.register("EXT-FreeboxTV", {
       if (handler.args) {
         if (this.ChannelsCheck(handler.args)) {
           this.playStream(handler.args)
-          return handler.reply("TEXT", this.translate("FBTV_TV_DISPLAY") + handler.args)
-        } else return handler.reply("TEXT", this.translate("FBTV_TV_NOTFOUND") + handler.args)
+          return handler.reply("TEXT", "J'affiche la chaine: " + handler.args)
+        } else return handler.reply("TEXT", "Chaine non trouvé: " + handler.args)
       }
       this.stopStream(true)
-      handler.reply("TEXT", this.translate("FBTV_TV_DOWN"))
+      handler.reply("TEXT", "J'éteins la TV.")
     },
 
     TVol: function(command, handler) {
@@ -160,10 +163,15 @@ Module.register("EXT-FreeboxTV", {
           if (this.config.volume.useLast) this.sendSocketNotification("VOLUME_LAST", this.volumeControl)
           this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl)
           console.log("[FreeboxTV] Volume:", this.volumeControl, "[" + value + "]")
-          return handler.reply("TEXT", this.translate("FBTV_TVOL_SET") + handler.args + "%")
+          return handler.reply("TEXT", "Je mets le volume à " + handler.args + "%")
         }
       }
-      else return handler.reply("TEXT", this.translate("FBTV_TVOL_RULE"))
+      else return handler.reply("TEXT", "Le volume doit être entre 0 et 100.")
+    },
+    
+    TVList: function(command, handler) {
+      let List = this.Channels.toString()
+      return handler.reply("TEXT", "Chaine disponible: " + List)
     },
 
     ChannelsCheck: function (channel) {
