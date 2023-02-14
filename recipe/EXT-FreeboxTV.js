@@ -382,7 +382,7 @@ var recipe = {
     },
     "stop": {
       notificationExec: {
-        notification: "EXT_FreeboxTV-STOP"
+        notification: "EXT_FREEBOXTV-STOP"
       },
       soundExec: {
         chime: "close"
@@ -390,7 +390,7 @@ var recipe = {
     },
     "VOLUMETV": {
       notificationExec: {
-        notification: "EXT_FreeboxTV-VOLUME",
+        notification: "EXT_FREEBOXTV-VOLUME",
         payload: (params) => {
           return params[1]
         }
