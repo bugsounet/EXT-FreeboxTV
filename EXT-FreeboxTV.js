@@ -1,5 +1,7 @@
 /* EXT-FreeboxTV */
 
+// @ToDO: minify
+
 Module.register("EXT-FreeboxTV", {
     defaults: {
       debug: false,
@@ -47,7 +49,7 @@ Module.register("EXT-FreeboxTV", {
       let last = this.FreeboxTV.last
       let channel = this.Channels.prev(last)
       if (!channel) channel = this.Channels[this.Channels.length-1]
-      this.playStream(channel)  
+      this.playStream(channel)
     },
 
     stopStream: function(force) {
@@ -125,7 +127,7 @@ Module.register("EXT-FreeboxTV", {
     },
 
     /** Telegram Addon **/
-    getCommands: function(commander) {
+    EXT_TELBOTCommands: function(commander) {
       commander.add({
         command: "TV",
         description: "Lance un chaine de FreeboxTV.",
@@ -168,7 +170,7 @@ Module.register("EXT-FreeboxTV", {
       }
       else return handler.reply("TEXT", "Le volume doit être entre 0 et 100.")
     },
-    
+
     TVList: function(command, handler) {
       let List = this.Channels.toString()
       return handler.reply("TEXT", "Chaine disponible: " + List)
