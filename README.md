@@ -1,5 +1,5 @@
 # EXT-FreeboxTV
-## Plugin pour MMM-GoogleAssistant v4.x
+## Plugin pour MMM-GoogleAssistant v5.x
 
 EXT-Freebox est un module pour le projet [MagicMirror](https://github.com/MichMich/MagicMirror) par [Michael Teeuw](https://github.com/MichMich).
 
