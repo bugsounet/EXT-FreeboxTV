@@ -1,7 +1,7 @@
 # EXT-FreeboxTV
 ## Plugin pour MMM-GoogleAssistant v4.x
 
-EXT-Freebox est un module pour le projet [MagicMirror](https://github.com/MichMich/MagicMirror) par [Michael Teeuw](https://github.com/MichMich).
+EXT-Freebox est un plugin pour `MMM-GoogleAssistant`
 
 Il permet d'afficher, sur votre Mirroir, les chaines de TV de la [Freebox](https://www.free.fr/freebox/).
 
