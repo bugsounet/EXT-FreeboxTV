@@ -42,7 +42,7 @@ Voici les chaines actuellement disponibles:
 | 347 | BFM Business |
 
 ## Screenshoot
-![](https://raw.githubusercontent.com/bugsounet/MMM-FreeboxTV/dev/screenshoot.jpg)
+![](https://raw.githubusercontent.com/bugsounet/EXT-FreeboxTV/dev/resources/screenshoot.jpg)
 
 ## Installation / update / configuration
 
