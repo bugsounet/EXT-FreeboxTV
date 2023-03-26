@@ -1,8 +1,7 @@
 #!/bin/bash
-# +--------------------------------+
-# | npm postinstall                |
-# | @bugsounet                     |
-# +--------------------------------+
+# +---------+
+# | updater |
+# +---------+
 
 # get the installer directory
 Installer_get_current_dir () {
@@ -19,8 +18,9 @@ Installer_dir="$(Installer_get_current_dir)"
 
 # move to installler directory
 cd "$Installer_dir"
-
 source utils.sh
+
+# Go back to module root
 cd ..
 
 # check version in package.json file
@@ -51,12 +51,20 @@ fi
 
 echo
 
-# check dependencies
-Installer_info "Checking all dependencies..."
-dependencies=(vlc)
+# deleting package.json because npm install add/update package
+rm -f package-lock.json
 
-Installer_update_dependencies
-Installer_success "All Dependencies needed are installed !"
+Installer_info "Updating..."
+
+git reset --hard HEAD
+git pull
+
 echo
+Installer_info "Deleting ALL @bugsounet libraries..."
+rm -rf node_modules/@bugsounet
 
-Installer_info "$Installer_module is now installed !"
+echo
+Installer_info "Ready for Installing..."
+
+# launch installer
+npm install
