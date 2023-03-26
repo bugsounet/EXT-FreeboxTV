@@ -1,5 +1,5 @@
 # EXT-FreeboxTV
-## Plugin pour MMM-GoogleAssistant v5.x
+## Plugin pour MMM-GoogleAssistant
 
 EXT-Freebox est un plugin pour `MMM-GoogleAssistant`
 
