@@ -26,7 +26,6 @@ module.exports = NodeHelper.create({
         this.scanStreamsConfig()
         if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args) }
         console.log("[FreeboxTV] FreeboxTV is initialized.")
-        log("Config:", this.config)
         this.sendSocketNotification("INITIALIZED", this.Channels)
         break
       case "PLAY":
@@ -94,7 +93,7 @@ module.exports = NodeHelper.create({
     if (fs.existsSync(file)) {
       try {
         this.FreeboxTV = JSON.parse(fs.readFileSync(file))
-        console.log("[FreeboxTV] Channels:", this.FreeboxTV)
+        //console.log("[FreeboxTV] Channels:", this.FreeboxTV)
         console.log("[FreeboxTV] Number of channels found:", Object.keys(this.FreeboxTV).length)
         this.Channels = Object.keys(this.FreeboxTV)
       } catch (e) {

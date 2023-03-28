@@ -1,7 +1,5 @@
 /* EXT-FreeboxTV */
 
-// @ToDO: minify
-
 Module.register("EXT-FreeboxTV", {
     defaults: {
       debug: false,
@@ -22,6 +20,7 @@ Module.register("EXT-FreeboxTV", {
       this.volumeControl= null
       this.Channels = []
       this.initializeVolume()
+      this.ready= false
     },
 
     getDom: function() {
@@ -64,13 +63,12 @@ Module.register("EXT-FreeboxTV", {
     },
 
     notificationReceived: function(notification, payload, sender) {
+      if (notification == "GW_READY") {
+        if (sender.name == "Gateway") this.sendSocketNotification("CONFIG", this.config)
+      }
+      if (!this.ready) return
+
       switch(notification) {
-        case "DOM_OBJECTS_CREATED":
-          this.sendSocketNotification("CONFIG", this.config)
-          break
-        case "GAv5_READY":
-          if (sender.name == "MMM-GoogleAssistant") this.sendNotification("EXT_HELLO", this.name)
-          break
         case "EXT_FREEBOXTV-PLAY":
           this.playStream(payload ? payload : this.Channels[0])
           break
@@ -113,7 +111,8 @@ Module.register("EXT-FreeboxTV", {
             return arr
           }
           iterifyArr(this.Channels)
-          console.log("[FreeboxTV] Ready, the show must go on!")
+          this.ready = true
+          this.sendNotification("EXT_HELLO", this.name)
           break
         case "ENDED":
           this.FreeboxTV.playing = false
