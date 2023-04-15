@@ -92,10 +92,10 @@ Module.register("EXT-FreeboxTV", {
             console.log("[FreeboxTV] Volume:", this.volumeControl, "[" + value + "]")
           } else console.log("[FreeboxTV] Volume Control wrong value:", payload)
           break
-        case "EXT-FREEBOXTV-VOLUME_MIN":
+        case "EXT_FREEBOXTV-VOLUME_MIN":
           if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.config.volume.min)
           break
-        case "EXT-FREEBOXTV-VOLUME_MAX":
+        case "EXT_FREEBOXTV-VOLUME_MAX":
           if (this.FreeboxTV.playing) this.sendSocketNotification("VOLUME_CONTROL", this.volumeControl ? this.volumeControl : this.config.volume.start)
           break
       }
