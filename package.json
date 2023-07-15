@@ -1,8 +1,8 @@
 {
   "name": "EXT-FreeboxTV",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Stream Freebox TV Channel",
-  "rev": "230411",
+  "rev": "230715",
   "main": "EXT-FreeboxTV.js",
   "author": "bugsounet",
   "license": "MIT",
@@ -18,7 +18,7 @@
     "url": "https://github.com/bugsounet/EXT-FreeboxTV"
   },
   "dependencies": {
-    "@bugsounet/cvlc": "^1.0.2",
+    "@bugsounet/cvlc": "https://github.com/bugsounet/cvlc",
     "check-node-version": "^4.2.1",
     "glob": "^9.3.2",
     "minify": "^9.2.0"
