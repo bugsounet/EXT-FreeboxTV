@@ -5,7 +5,7 @@
 var NodeHelper = require("node_helper")
 const fs = require('fs')
 const path = require("path")
-var Cvlc = require('@bugsounet/cvlc')
+var Cvlc = require('@magicmirror2/cvlc')
 var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
