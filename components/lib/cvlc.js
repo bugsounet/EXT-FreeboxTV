@@ -41,7 +41,6 @@ Cvlc = Fn.inherits('Informer', function Cvlc(options) {
 
   // Create the instance
   this.getInstance();
-  console.log("[CVLC] v"+ require('../package.json').version + " initialized !")
 });
 
 /**

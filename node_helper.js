@@ -5,7 +5,7 @@
 var NodeHelper = require("node_helper")
 const fs = require('fs')
 const path = require("path")
-var Cvlc = require('./components/cvlc')
+var Cvlc = require('./components/lib/cvlc')
 var log = (...args) => { /* do nothing */ }
 
 module.exports = NodeHelper.create({
