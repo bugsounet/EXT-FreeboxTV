@@ -18,10 +18,8 @@
     "url": "https://github.com/bugsounet/EXT-FreeboxTV"
   },
   "dependencies": {
+    "@magicmirror2/cvlc": "^1.0.7",
     "esbuild": "^0.18.15",
-    "glob": "^10.3.3",
-    "portfinder": "~0.4.0",
-    "protoblast": "~0.1.11",
-    "telnet-client": "~0.5.0"
+    "glob": "^10.3.3"
   }
 }
