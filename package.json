@@ -7,7 +7,7 @@
   "author": "bugsounet",
   "license": "MIT",
   "scripts": {
-    "preinstall": "installer/preinstall.sh",
+    "preinstall": "installer/preinstall.sh -d 'vlc'",
     "postinstall": "installer/postinstall.sh -m -b",
     "update": "installer/update.sh",
     "reset": "git reset --hard",
