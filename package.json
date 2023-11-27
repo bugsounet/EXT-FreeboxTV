@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@magicmirror2/cvlc": "^1.0.8",
-    "esbuild": "^0.19.6",
+    "esbuild": "^0.19.8",
     "glob": "^10.3.10"
   }
 }
