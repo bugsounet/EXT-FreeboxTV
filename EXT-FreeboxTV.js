@@ -63,8 +63,8 @@ Module.register("EXT-FreeboxTV", {
     },
 
     notificationReceived: function(notification, payload, sender) {
-      if (notification == "GW_READY") {
-        if (sender.name == "Gateway") this.sendSocketNotification("CONFIG", this.config)
+      if (notification == "GA_READY") {
+        if (sender.name == "MMM-GoogleAssistant") this.sendSocketNotification("CONFIG", this.config)
       }
       if (!this.ready) return
 
