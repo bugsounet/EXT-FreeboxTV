@@ -1,8 +1,8 @@
 {
   "name": "EXT-FreeboxTV",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "Stream Freebox TV Channel",
-  "rev": "240103",
+  "rev": "240225",
   "main": "EXT-FreeboxTV.js",
   "author": "bugsounet",
   "license": "MIT",
@@ -11,15 +11,35 @@
     "postinstall": "installer/postinstall.sh -m -b",
     "update": "installer/update.sh",
     "reset": "git reset --hard",
-    "clean": "rm -rf node_modules package-lock.json"
+    "clean": "rm -rf node_modules package-lock.json",
+    "lint": "eslint *.js installer/*.js --config eslint.config.js",
+    "lint:fix": "eslint *.js installer/*.js --config eslint.config.js --fix",
+    "test": "npm run lint",
+    "test:minify": "cd installer && node minify.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/bugsounet/EXT-FreeboxTV"
   },
+  "keywords": [
+    "magicmirror",
+    "freebox",
+    "free",
+    "tv"
+  ],
+  "homepage": "https://wiki.bugsounet.fr/en/EXT-FreeboxT",
+  "bugs": {
+    "url": "https://forum.bugsounet.fr"
+  },
   "dependencies": {
     "@magicmirror2/cvlc": "^1.0.8",
-    "esbuild": "^0.19.11",
+    "esbuild": "^0.20.1",
     "glob": "^10.3.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^8.57.0",
+    "@stylistic/eslint-plugin": "^1.6.2",
+    "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1"
   }
 }
