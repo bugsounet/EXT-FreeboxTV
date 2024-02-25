@@ -21,6 +21,10 @@
     "type": "git",
     "url": "https://github.com/bugsounet/EXT-FreeboxTV"
   },
+  "homepage": "https://wiki.bugsounet.fr/en/EXT-FreeboxT",
+  "bugs": {
+    "url": "https://forum.bugsounet.fr"
+  },
   "dependencies": {
     "@magicmirror2/cvlc": "^1.0.8",
     "esbuild": "^0.20.1",
