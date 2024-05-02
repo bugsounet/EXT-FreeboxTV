@@ -4,7 +4,7 @@
 
 const fs = require("fs");
 const path = require("path");
-var Cvlc = require("@magicmirror2/cvlc");
+const VLC = require("vlc-client");
 var NodeHelper = require("node_helper");
 
 var log = (...args) => { /* do nothing */ };
@@ -12,11 +12,16 @@ var log = (...args) => { /* do nothing */ };
 module.exports = NodeHelper.create({
 
   start () {
-    this.stream= null;
     this.FreeboxTV= {};
-    this.ID = 0;
     this.volumeControl = null;
     this.Channels = [];
+    this.vlc = null;
+    this.statusInterval = null;
+    this.TV = {
+      is_playing: false,
+      link: null,
+      filemame: null
+    };
   },
 
   socketNotificationReceived (notification, payload) {
@@ -26,6 +31,13 @@ module.exports = NodeHelper.create({
         console.log("[FreeboxTV] EXT-FreeboxTV Version:",  require("./package.json").version);
         if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args); };
         this.scanStreamsConfig();
+        this.vlc = new VLC.Client({
+          ip: "127.0.0.1",
+          port: 8082,
+          password: "EXT-VLCServer",
+          log: this.config.debug
+        });
+        this.statusInterval = setInterval(() => this.status(), 1000);
         console.log("[FreeboxTV] FreeboxTV is initialized.");
         this.sendSocketNotification("INITIALIZED", this.Channels);
         break;
@@ -44,46 +56,59 @@ module.exports = NodeHelper.create({
     }
   },
 
+  async status () {
+    const status = await this.vlc.status().catch(
+      (err)=> {
+        if (err.code === "ECONNREFUSED" || err.message.includes("Unauthorized")) {
+          clearInterval(this.statusInterval);
+          console.error("[FreeboxTV] Can't start VLC Client! Reason:", err.message);
+          this.sendSocketNotification("ERROR", `Can't start VLC Client! Reason: ${err.message}`);
+        } else {
+          console.error("[FreeboxTV]", err.message);
+          this.sendSocketNotification("ERROR", `VLC Client error: ${err.message}`);
+        }
+      }
+    );
+
+    if (!status) return;
+    if (status.state === "playing") {
+      if (status.information.category.meta.filename !== this.TV.filename) {
+        if (this.TV.is_playing) this.sendSocketNotification("ENDED");
+        this.TV.is_playing = false;
+        log("Not played by EXT-MusicPlayer");
+        return;
+      }
+      if (!this.TV.is_playing) this.sendSocketNotification("STARTED");
+      if (status.fullscreen === false) await this.vlc.setFullscreen(true);
+      this.TV.is_playing = true;
+      log("Playing");
+    }
+    if (status.state === "stopped") {
+      if (this.TV.is_playing) this.sendSocketNotification("ENDED");
+      this.TV.is_playing = false;
+      log("Stopped");
+    }
+  },
+
   stop () {
     log("Stop TV...");
     this.stopPlayer();
   },
 
-  startPlayer (name) {
-    this.ID++;
-
+  async startPlayer (name) {
     if (!this.FreeboxTV[name]) return log ("Channel not found:", name);
     var link = this.FreeboxTV[name];
-    // Generate the VLC window
-    var args = ["--video-on-top", "--no-video-title-show", "--no-video-deco", "--no-embedded-video", "--video-title=FreeboxTV", "--fullscreen"];
+    this.TV.link = link;
+    this.TV.filename = this.TV.link?.split("/").pop();
 
-    this.stream = new Cvlc(args);
-    log("Starting channel:", name);
-    this.stream.play(
-      link,
-      ()=> {
-        log("Found link:", link);
-        if (this.stream) {
-          this.volume(this.volumeControl ? this.volumeControl: this.config.volume.start);
-          this.sendSocketNotification("STARTED");
-        }
-      },
-      ()=> {
-        this.ID--;
-        if (this.ID < 0) this.ID = 0;
-        log("Video ended");
-        if (this.ID === 0) {
-          log("Finish !");
-          this.stream = null;
-          this.sendSocketNotification("ENDED");
-        }
-      }
-    );
+    await this.vlc.stop();
+    await this.vlc.setVolumeRaw(this.volumeControl ? this.volumeControl: this.config.volume.start);
+    await this.vlc.playFile(link);
   },
 
   stopPlayer () {
-    if (this.stream) {
-      this.stream.destroy();
+    if (this.TV.is_playing) {
+      this.vlc.stop();
       log("Stop streaming");
     }
   },
@@ -104,9 +129,9 @@ module.exports = NodeHelper.create({
   },
 
   volume (volume) {
-    if (this.stream) {
+    if (this.TV.is_playing) {
       log("Set VLC Volume to:", volume);
-      this.stream.cmd(`volume ${volume}`);
+      this.vlc.setVolumeRaw(volume);
     }
   }
 });
