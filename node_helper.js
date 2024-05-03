@@ -17,6 +17,7 @@ module.exports = NodeHelper.create({
     this.Channels = [];
     this.vlc = null;
     this.statusInterval = null;
+    this.warn = 0;
     this.TV = {
       is_playing: false,
       link: null,
@@ -60,9 +61,12 @@ module.exports = NodeHelper.create({
     const status = await this.vlc.status().catch(
       (err)=> {
         if (err.code === "ECONNREFUSED" || err.message.includes("Unauthorized")) {
-          clearInterval(this.statusInterval);
+          this.warn++;
           console.error("[FreeboxTV] Can't start VLC Client! Reason:", err.message);
-          this.sendSocketNotification("ERROR", `Can't start VLC Client! Reason: ${err.message}`);
+          if (this.warn > 5) {
+            clearInterval(this.statusInterval);
+            this.sendSocketNotification("ERROR", `Can't start VLC Client! Reason: ${err.message}`);
+          }
         } else {
           console.error("[FreeboxTV]", err.message);
           this.sendSocketNotification("ERROR", `VLC Client error: ${err.message}`);
@@ -71,6 +75,8 @@ module.exports = NodeHelper.create({
     );
 
     if (!status) return;
+    else this.warn = 0;
+
     if (status.state === "playing") {
       if (status.information.category.meta.filename !== this.TV.filename) {
         if (this.TV.is_playing) this.sendSocketNotification("ENDED");
