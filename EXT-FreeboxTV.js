@@ -198,11 +198,11 @@ Module.register("EXT-FreeboxTV", {
       if (typeof valueStart === "number" && valueStart >= 0 && valueStart <= 100) this.config.volume.start = ((valueStart * 255) / 100).toFixed(0);
       else {
         console.error("[FreeboxTV] config.volume.start error! Corrected with 100");
-        this.config.volume.min = 255;
+        this.config.volume.start = 255;
       }
     } catch (e) {
       console.error("[FreeboxTV] config.volume.start error!", e);
-      this.config.volume.min = 255;
+      this.config.volume.start = 255;
     }
     try {
       let valueMin = null;

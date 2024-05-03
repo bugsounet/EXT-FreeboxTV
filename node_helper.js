@@ -75,10 +75,14 @@ module.exports = NodeHelper.create({
       if (status.information.category.meta.filename !== this.TV.filename) {
         if (this.TV.is_playing) this.sendSocketNotification("ENDED");
         this.TV.is_playing = false;
-        log("Not played by EXT-MusicPlayer");
+        log("Not played by EXT-FreeboxTV");
         return;
       }
-      if (!this.TV.is_playing) this.sendSocketNotification("STARTED");
+      if (!this.TV.is_playing) {
+        log("Set volume to", this.volumeControl ? this.volumeControl: this.config.volume.start);
+        await this.vlc.setVolumeRaw(this.volumeControl ? this.volumeControl: this.config.volume.start);
+        this.sendSocketNotification("STARTED");
+      }
       if (status.fullscreen === false) await this.vlc.setFullscreen(true);
       this.TV.is_playing = true;
       log("Playing");
@@ -101,8 +105,6 @@ module.exports = NodeHelper.create({
     this.TV.link = link;
     this.TV.filename = this.TV.link?.split("/").pop();
 
-    await this.vlc.stop();
-    await this.vlc.setVolumeRaw(this.volumeControl ? this.volumeControl: this.config.volume.start);
     await this.vlc.playFile(link);
   },
 
