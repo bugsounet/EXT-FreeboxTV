@@ -132,6 +132,13 @@ Module.register("EXT-FreeboxTV", {
         this.FreeboxTV.playing = true;
         this.sendNotification("EXT_FREEBOXTV-CONNECTED");
         break;
+      case "ERROR": // EXT-Alert is unlocked for receive all alerts
+        this.sendNotification("EXT_ALERT", {
+          type: "error",
+          message: payload,
+          timer: 10000
+        });
+        break;
     }
   },
 
