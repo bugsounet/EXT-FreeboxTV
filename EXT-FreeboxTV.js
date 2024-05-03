@@ -21,6 +21,7 @@ Module.register("EXT-FreeboxTV", {
     this.Channels = [];
     this.initializeVolume();
     this.ready= false;
+    this.canStop = true;
   },
 
   getDom () {
@@ -79,9 +80,12 @@ Module.register("EXT-FreeboxTV", {
       case "EXT_FREEBOXTV-PREVIOUS":
         this.playPreviousStream(payload);
         break;
+      case "EXT_VLCServer-WILL_PLAYING":
+        this.canStop = false;
+        break;
       case "EXT_STOP":
       case "EXT_FREEBOXTV-STOP":
-        this.stopStream(true);
+        if (this.canStop) this.stopStream(true);
         break;
       case "EXT_FREEBOXTV-VOLUME":
         let value = null;
@@ -127,6 +131,7 @@ Module.register("EXT-FreeboxTV", {
         break;
       case "ENDED":
         this.FreeboxTV.playing = false;
+        this.canStop = true;
         this.sendNotification("EXT_FREEBOXTV-DISCONNECTED");
         break;
       case "STARTED":
@@ -139,6 +144,9 @@ Module.register("EXT-FreeboxTV", {
           message: payload,
           timer: 10000
         });
+        break;
+      case "WILL_PLAYING":
+        this.sendNotification("EXT_VLCServer-WILL_PLAYING");
         break;
     }
   },
