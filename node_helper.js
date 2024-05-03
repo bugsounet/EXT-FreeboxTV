@@ -32,6 +32,9 @@ module.exports = NodeHelper.create({
         console.log("[FreeboxTV] EXT-FreeboxTV Version:",  require("./package.json").version);
         if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args); };
         this.scanStreamsConfig();
+        break;
+      case "START":
+        console.log("[FreeboxTV] Starting TV module...");
         this.vlc = new VLC.Client({
           ip: "127.0.0.1",
           port: 8082,

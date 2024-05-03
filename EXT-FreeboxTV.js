@@ -66,6 +66,7 @@ Module.register("EXT-FreeboxTV", {
     if (notification === "GA_READY") {
       if (sender.name === "MMM-GoogleAssistant") this.sendSocketNotification("CONFIG", this.config);
     }
+    if (notification === "EXT_VLCSERVER-START") this.sendSocketNotification("START");
     if (!this.ready) return;
 
     switch(notification) {
