@@ -2,7 +2,7 @@
   "name": "EXT-FreeboxTV",
   "version": "2.4.0",
   "description": "Stream Freebox TV Channel",
-  "rev": "240502",
+  "rev": "240504",
   "main": "EXT-FreeboxTV.js",
   "author": "bugsounet",
   "license": "MIT",
