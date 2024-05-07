@@ -143,7 +143,7 @@ module.exports = NodeHelper.create({
         console.log("[FreeboxTV] Number of channels found:", Object.keys(this.FreeboxTV).length);
         this.Channels = Object.keys(this.FreeboxTV);
       } catch (e) {
-        return console.log(`[FreeboxTV] ERROR: ${this.config.streams}`, e.name);
+        return console.log(`[FreeboxTV] ERROR: ${this.config.streams}:`, e.message);
       }
     } else console.log(`[FreeboxTV] ERROR: missing ${this.config.streams} configuration file!`);
   },

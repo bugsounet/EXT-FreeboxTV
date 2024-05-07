@@ -126,8 +126,10 @@ Module.register("EXT-FreeboxTV", {
           return arr;
         };
         iterifyArr(this.Channels);
-        this.ready = true;
-        this.sendNotification("EXT_HELLO", this.name);
+        if (!this.ready) {
+          this.ready = true;
+          this.sendNotification("EXT_HELLO", this.name);
+        }
         break;
       case "ENDED":
         this.FreeboxTV.playing = false;
