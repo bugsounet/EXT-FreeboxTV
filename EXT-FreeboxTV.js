@@ -173,6 +173,8 @@ Module.register("EXT-FreeboxTV", {
   },
 
   TV (command, handler) {
+    if (!this.ready) return handler.reply("TEXT", "EXT-FreeboxTV n'est pas prêt.");
+
     if (handler.args) {
       if (this.ChannelsCheck(handler.args)) {
         this.playStream(handler.args);
@@ -184,6 +186,8 @@ Module.register("EXT-FreeboxTV", {
   },
 
   TVol (command, handler) {
+    if (!this.ready) return handler.reply("TEXT", "EXT-FreeboxTV n'est pas prêt.");
+
     if (handler.args) {
       let value = null;
       value = parseInt(handler.args);
@@ -199,8 +203,13 @@ Module.register("EXT-FreeboxTV", {
   },
 
   TVList (command, handler) {
+    if (!this.ready) return handler.reply("TEXT", "EXT-FreeboxTV n'est pas prêt.");
+
     let List = this.Channels.toString();
-    return handler.reply("TEXT", `Chaine disponible: ${List}`);
+    if (!List) return handler.reply("TEXT", "Aucune Chaine disponible.");
+
+    List = List.replaceAll(",", "\n - ");
+    return handler.reply("TEXT", `Chaine disponible:\n - ${List}`);
   },
 
   ChannelsCheck (channel) {

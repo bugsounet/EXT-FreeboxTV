@@ -29,7 +29,7 @@ module.exports = NodeHelper.create({
     switch(notification) {
       case "CONFIG":
         this.config = payload;
-        console.log("[FreeboxTV] EXT-FreeboxTV Version:",  require("./package.json").version);
+        console.log(`[FreeboxTV] EXT-FreeboxTV Version: ${require("./package.json").version} rev: ${require("./package.json").rev}`);
         if (this.config.debug) log = (...args) => { console.log("[FreeboxTV]", ...args); };
         this.scanStreamsConfig();
         break;
@@ -69,14 +69,18 @@ module.exports = NodeHelper.create({
       (err)=> {
         if (err.code === "ECONNREFUSED" || err.message.includes("Unauthorized")) {
           this.warn++;
-          console.error("[FreeboxTV] Can't start VLC Client! Reason:", err.message);
+          console.error(`[FreeboxTV] Can't start VLC Client! Reason: ${err.message}`);
           if (this.warn > 5) {
-            clearInterval(this.statusInterval);
+            clearTimeout(this.statusInterval);
             this.sendSocketNotification("ERROR", `Can't start VLC Client! Reason: ${err.message}`);
+            this.sendSocketNotification("ENDED");
+            this.TV.is_playing = false;
           }
         } else {
           console.error("[FreeboxTV]", err.message);
           this.sendSocketNotification("ERROR", `VLC Client error: ${err.message}`);
+          this.sendSocketNotification("ENDED");
+          this.TV.is_playing = false;
         }
       }
     );
@@ -115,7 +119,7 @@ module.exports = NodeHelper.create({
   },
 
   async startPlayer (name) {
-    if (!this.FreeboxTV[name]) return log ("Channel not found:", name);
+    if (!this.FreeboxTV[name]) return log (`Channel not found: ${name}`);
     clearInterval(this.statusInterval);
     this.sendSocketNotification("WILL_PLAYING");
     var link = this.FreeboxTV[name];
@@ -134,14 +138,14 @@ module.exports = NodeHelper.create({
   },
 
   scanStreamsConfig () {
-    console.log("[FreeboxTV] Reading:", this.config.streams);
+    console.log(`[FreeboxTV] Reading: ${this.config.streams}`);
     let file = path.resolve(__dirname, this.config.streams);
     if (fs.existsSync(file)) {
       try {
         this.FreeboxTV = JSON.parse(fs.readFileSync(file));
         //console.log("[FreeboxTV] Channels:", this.FreeboxTV)
-        console.log("[FreeboxTV] Number of channels found:", Object.keys(this.FreeboxTV).length);
         this.Channels = Object.keys(this.FreeboxTV);
+        console.log(`[FreeboxTV] Number of channels found: ${this.Channels.length}`);
       } catch (e) {
         return console.log(`[FreeboxTV] ERROR: ${this.config.streams}:`, e.message);
       }
@@ -150,7 +154,7 @@ module.exports = NodeHelper.create({
 
   volume (volume) {
     if (this.TV.is_playing) {
-      log("Set VLC Volume to:", volume);
+      log(`Set VLC Volume to: ${volume}`);
       this.vlc.setVolumeRaw(volume);
     }
   }
