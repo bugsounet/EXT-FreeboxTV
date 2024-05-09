@@ -146,6 +146,7 @@ Module.register("EXT-FreeboxTV", {
         break;
       case "STARTED":
         this.FreeboxTV.playing = true;
+        this.canStop = true;
         this.sendNotification("EXT_FREEBOXTV-CONNECTED");
         break;
       case "ERROR": // EXT-Alert is unlocked for receive all alerts
