@@ -77,7 +77,7 @@ module.exports = NodeHelper.create({
             this.TV.is_playing = false;
           }
         } else {
-          console.error("[FreeboxTV]", err.message);
+          console.error(`[FreeboxTV] ${err.message}`);
           this.sendSocketNotification("ERROR", `VLC Client error: ${err.message}`);
           this.sendSocketNotification("ENDED");
           this.TV.is_playing = false;
