@@ -31,7 +31,15 @@ Module.register("EXT-FreeboxTV", {
   },
 
   playStream (channel) {
-    if (!this.ChannelsCheck(channel)) return console.log("[FreeboxTV] channel not found");
+    if (!this.ChannelsCheck(channel)) {
+      console.error(`[FreeboxTV] Channel not found: ${channel}`);
+      this.sendNotification("EXT_ALERT", {
+        type: "error",
+        message: `Channel not found: ${channel}`,
+        timer: 10000
+      });
+      return;
+    }
     if (this.FreeboxTV.playing) this.stopStream();
     this.sendSocketNotification("PLAY", channel);
     this.FreeboxTV.channel = channel;
@@ -209,7 +217,7 @@ Module.register("EXT-FreeboxTV", {
     if (!List) return handler.reply("TEXT", "Aucune Chaine disponible.");
 
     List = List.replaceAll(",", "\n - ");
-    return handler.reply("TEXT", `Chaine disponible:\n - ${List}`);
+    handler.reply("TEXT", `Chaine disponible:\n - ${List}`);
   },
 
   ChannelsCheck (channel) {
@@ -224,11 +232,11 @@ Module.register("EXT-FreeboxTV", {
       valueStart = parseInt(this.config.volume.start);
       if (typeof valueStart === "number" && valueStart >= 0 && valueStart <= 100) this.config.volume.start = ((valueStart * 255) / 100).toFixed(0);
       else {
-        console.error("[FreeboxTV] config.volume.start error! Corrected with 100");
+        console.warn("[FreeboxTV] config.volume.start error! Corrected with 100");
         this.config.volume.start = 255;
       }
     } catch (e) {
-      console.error("[FreeboxTV] config.volume.start error!", e);
+      console.warn("[FreeboxTV] config.volume.start error!", e);
       this.config.volume.start = 255;
     }
     try {
@@ -236,11 +244,11 @@ Module.register("EXT-FreeboxTV", {
       valueMin = parseInt(this.config.volume.min);
       if (typeof valueMin === "number" && valueMin >= 0 && valueMin <= 100) this.config.volume.min = ((valueMin * 255) / 100).toFixed(0);
       else {
-        console.error("[FreeboxTV] config.volume.min error! Corrected with 30");
+        console.warn("[FreeboxTV] config.volume.min error! Corrected with 30");
         this.config.volume.min = 70;
       }
     } catch (e) {
-      console.error("[FreeboxTV] config.volume.min error!", e);
+      console.warn("[FreeboxTV] config.volume.min error!", e);
       this.config.volume.min = 70;
     }
     console.log("[FreeboxTV] Volume Control initialized!");
