@@ -21,6 +21,7 @@ Module.register("EXT-FreeboxTV", {
     this.Channels = [];
     this.initializeVolume();
     this.ready= false;
+    this.canStop = true;
   },
 
   getDom () {
@@ -30,7 +31,15 @@ Module.register("EXT-FreeboxTV", {
   },
 
   playStream (channel) {
-    if (!this.ChannelsCheck(channel)) return console.log("[FreeboxTV] channel not found");
+    if (!this.ChannelsCheck(channel)) {
+      console.error(`[FreeboxTV] Channel not found: ${channel}`);
+      this.sendNotification("EXT_ALERT", {
+        type: "error",
+        message: `Channel not found: ${channel}`,
+        timer: 10000
+      });
+      return;
+    }
     if (this.FreeboxTV.playing) this.stopStream();
     this.sendSocketNotification("PLAY", channel);
     this.FreeboxTV.channel = channel;
@@ -66,6 +75,7 @@ Module.register("EXT-FreeboxTV", {
     if (notification === "GA_READY") {
       if (sender.name === "MMM-GoogleAssistant") this.sendSocketNotification("CONFIG", this.config);
     }
+    if (notification === "EXT_VLCSERVER-START") this.sendSocketNotification("START");
     if (!this.ready) return;
 
     switch(notification) {
@@ -78,9 +88,12 @@ Module.register("EXT-FreeboxTV", {
       case "EXT_FREEBOXTV-PREVIOUS":
         this.playPreviousStream(payload);
         break;
+      case "EXT_VLCServer-WILL_PLAYING":
+        this.canStop = false;
+        break;
       case "EXT_STOP":
       case "EXT_FREEBOXTV-STOP":
-        this.stopStream(true);
+        if (this.canStop) this.stopStream(true);
         break;
       case "EXT_FREEBOXTV-VOLUME":
         let value = null;
@@ -121,16 +134,30 @@ Module.register("EXT-FreeboxTV", {
           return arr;
         };
         iterifyArr(this.Channels);
-        this.ready = true;
-        this.sendNotification("EXT_HELLO", this.name);
+        if (!this.ready) {
+          this.ready = true;
+          this.sendNotification("EXT_HELLO", this.name);
+        }
         break;
       case "ENDED":
         this.FreeboxTV.playing = false;
+        this.canStop = true;
         this.sendNotification("EXT_FREEBOXTV-DISCONNECTED");
         break;
       case "STARTED":
         this.FreeboxTV.playing = true;
+        this.canStop = true;
         this.sendNotification("EXT_FREEBOXTV-CONNECTED");
+        break;
+      case "ERROR": // EXT-Alert is unlocked for receive all alerts
+        this.sendNotification("EXT_ALERT", {
+          type: "error",
+          message: payload,
+          timer: 10000
+        });
+        break;
+      case "WILL_PLAYING":
+        this.sendNotification("EXT_VLCServer-WILL_PLAYING");
         break;
     }
   },
@@ -155,6 +182,8 @@ Module.register("EXT-FreeboxTV", {
   },
 
   TV (command, handler) {
+    if (!this.ready) return handler.reply("TEXT", "EXT-FreeboxTV n'est pas prêt.");
+
     if (handler.args) {
       if (this.ChannelsCheck(handler.args)) {
         this.playStream(handler.args);
@@ -166,6 +195,8 @@ Module.register("EXT-FreeboxTV", {
   },
 
   TVol (command, handler) {
+    if (!this.ready) return handler.reply("TEXT", "EXT-FreeboxTV n'est pas prêt.");
+
     if (handler.args) {
       let value = null;
       value = parseInt(handler.args);
@@ -181,8 +212,13 @@ Module.register("EXT-FreeboxTV", {
   },
 
   TVList (command, handler) {
+    if (!this.ready) return handler.reply("TEXT", "EXT-FreeboxTV n'est pas prêt.");
+
     let List = this.Channels.toString();
-    return handler.reply("TEXT", `Chaine disponible: ${List}`);
+    if (!List) return handler.reply("TEXT", "Aucune Chaine disponible.");
+
+    List = List.replaceAll(",", "\n - ");
+    handler.reply("TEXT", `Chaine disponible:\n - ${List}`);
   },
 
   ChannelsCheck (channel) {
@@ -197,23 +233,23 @@ Module.register("EXT-FreeboxTV", {
       valueStart = parseInt(this.config.volume.start);
       if (typeof valueStart === "number" && valueStart >= 0 && valueStart <= 100) this.config.volume.start = ((valueStart * 255) / 100).toFixed(0);
       else {
-        console.error("[FreeboxTV] config.volume.start error! Corrected with 100");
-        this.config.volume.min = 255;
+        console.warn("[FreeboxTV] config.volume.start error! Corrected with 100");
+        this.config.volume.start = 255;
       }
     } catch (e) {
-      console.error("[FreeboxTV] config.volume.start error!", e);
-      this.config.volume.min = 255;
+      console.warn("[FreeboxTV] config.volume.start error!", e);
+      this.config.volume.start = 255;
     }
     try {
       let valueMin = null;
       valueMin = parseInt(this.config.volume.min);
       if (typeof valueMin === "number" && valueMin >= 0 && valueMin <= 100) this.config.volume.min = ((valueMin * 255) / 100).toFixed(0);
       else {
-        console.error("[FreeboxTV] config.volume.min error! Corrected with 30");
+        console.warn("[FreeboxTV] config.volume.min error! Corrected with 30");
         this.config.volume.min = 70;
       }
     } catch (e) {
-      console.error("[FreeboxTV] config.volume.min error!", e);
+      console.warn("[FreeboxTV] config.volume.min error!", e);
       this.config.volume.min = 70;
     }
     console.log("[FreeboxTV] Volume Control initialized!");
