@@ -47,9 +47,6 @@ Voici les chaines actuellement disponibles:
 ## Installation / update / configuration
 
 Une page [wiki](https://wiki.bugsounet.fr/EXT-FreeboxTV) a été créé
-
-## Support and Helping
-Le support est disponible sur ce [forum](https://forum.bugsounet.fr) !
  
 ## Donate
  [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=TTHRH94Y4KL36&source=url), Si vous aimez mes modules !
