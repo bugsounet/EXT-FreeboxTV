@@ -1,14 +1,14 @@
 {
   "name": "EXT-FreeboxTV",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "description": "Stream Freebox TV Channel",
-  "rev": "240504",
+  "rev": "240701",
   "main": "EXT-FreeboxTV.js",
   "author": "bugsounet",
   "license": "MIT",
   "scripts": {
     "preinstall": "installer/preinstall.sh -d 'vlc'",
-    "postinstall": "installer/postinstall.sh -m -b",
+    "postinstall": "installer/postinstall.sh -m",
     "update": "installer/update.sh",
     "reset": "git reset --hard",
     "clean": "rm -rf node_modules package-lock.json",
@@ -30,16 +30,19 @@
   ],
   "homepage": "https://wiki.bugsounet.fr/en/EXT-FreeboxTV",
   "bugs": {
-    "url": "https://forum.bugsounet.fr"
+    "url": "https://wiki.bugsounet.fr/en/EXT-FreeboxTV/issues"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "dependencies": {
-    "esbuild": "^0.21.2",
-    "glob": "^10.3.15",
+    "esbuild": "^0.22.0",
+    "glob": "^10.4.2",
     "vlc-client": "^1.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
-    "@stylistic/eslint-plugin": "1.8.0",
+    "@stylistic/eslint-plugin": "^1.8.1",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.29.1"
   }
