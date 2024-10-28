@@ -33,7 +33,7 @@ Module.register("EXT-FreeboxTV", {
   playStream (channel) {
     if (!this.ChannelsCheck(channel)) {
       console.error(`[FreeboxTV] Channel not found: ${channel}`);
-      this.sendNotification("EXT_ALERT", {
+      this.sendNotification("GA_ALERT", {
         type: "error",
         message: `Channel not found: ${channel}`,
         timer: 10000
@@ -149,8 +149,8 @@ Module.register("EXT-FreeboxTV", {
         this.canStop = true;
         this.sendNotification("EXT_FREEBOXTV-CONNECTED");
         break;
-      case "ERROR": // EXT-Alert is unlocked for receive all alerts
-        this.sendNotification("EXT_ALERT", {
+      case "ERROR":
+        this.sendNotification("GA_ALERT", {
           type: "error",
           message: payload,
           timer: 10000
