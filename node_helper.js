@@ -7,12 +7,12 @@ const path = require("path");
 const VLC = require("vlc-client");
 var NodeHelper = require("node_helper");
 
-var log = (...args) => { /* do nothing */ };
+var log = () => { /* do nothing */ };
 
 module.exports = NodeHelper.create({
 
   start () {
-    this.FreeboxTV= {};
+    this.FreeboxTV = {};
     this.volumeControl = null;
     this.Channels = [];
     this.vlc = null;
@@ -26,7 +26,7 @@ module.exports = NodeHelper.create({
   },
 
   socketNotificationReceived (notification, payload) {
-    switch(notification) {
+    switch (notification) {
       case "CONFIG":
         this.config = payload;
         console.log(`[FreeboxTV] EXT-FreeboxTV Version: ${require("./package.json").version} rev: ${require("./package.json").rev}`);
@@ -66,7 +66,7 @@ module.exports = NodeHelper.create({
 
   async status () {
     const status = await this.vlc.status().catch(
-      (err)=> {
+      (err) => {
         if (err.code === "ECONNREFUSED" || err.message.includes("Unauthorized")) {
           this.warn++;
           console.error(`[FreeboxTV] Can't start VLC Client! Reason: ${err.message}`);
@@ -97,8 +97,8 @@ module.exports = NodeHelper.create({
         return;
       }
       if (!this.TV.is_playing) {
-        log("Set volume to", this.volumeControl ? this.volumeControl: this.config.volume.start);
-        await this.vlc.setVolumeRaw(this.volumeControl ? this.volumeControl: this.config.volume.start);
+        log("Set volume to", this.volumeControl ? this.volumeControl : this.config.volume.start);
+        await this.vlc.setVolumeRaw(this.volumeControl ? this.volumeControl : this.config.volume.start);
         this.sendSocketNotification("STARTED");
       }
       if (status.fullscreen === false) await this.vlc.setFullscreen(true);
@@ -119,7 +119,7 @@ module.exports = NodeHelper.create({
   },
 
   async startPlayer (name) {
-    if (!this.FreeboxTV[name]) return log (`Channel not found: ${name}`);
+    if (!this.FreeboxTV[name]) return log(`Channel not found: ${name}`);
     clearInterval(this.statusInterval);
     this.sendSocketNotification("WILL_PLAYING");
     var link = this.FreeboxTV[name];

@@ -17,10 +17,10 @@ Module.register("EXT-FreeboxTV", {
       channel: null,
       last: 9999
     };
-    this.volumeControl= null;
+    this.volumeControl = null;
     this.Channels = [];
     this.initializeVolume();
-    this.ready= false;
+    this.ready = false;
     this.canStop = true;
   },
 
@@ -56,14 +56,14 @@ Module.register("EXT-FreeboxTV", {
   playPreviousStream () {
     let last = this.FreeboxTV.last;
     let channel = this.Channels.prev(last);
-    if (!channel) channel = this.Channels[this.Channels.length-1];
+    if (!channel) channel = this.Channels[this.Channels.length - 1];
     this.playStream(channel);
   },
 
   stopStream (force) {
     if (this.FreeboxTV.playing) {
       this.sendSocketNotification("STOP");
-      this.FreeboxTV.channel= null;
+      this.FreeboxTV.channel = null;
     }
     if (force) {
       this.FreeboxTV.playing = false;
@@ -78,7 +78,7 @@ Module.register("EXT-FreeboxTV", {
     if (notification === "EXT_VLCSERVER-START") this.sendSocketNotification("START");
     if (!this.ready) return;
 
-    switch(notification) {
+    switch (notification) {
       case "EXT_FREEBOXTV-PLAY":
         this.playStream(payload ? payload : this.Channels[0]);
         break;
@@ -96,7 +96,7 @@ Module.register("EXT-FreeboxTV", {
         if (this.canStop) this.stopStream(true);
         break;
       case "EXT_FREEBOXTV-VOLUME":
-        let value = null;
+        var value = null;
         if (payload) value = parseInt(payload);
         if (typeof value === "number" && value >= 0 && value <= 100) {
           this.volumeControl = ((value * 255) / 100).toFixed(0);
@@ -115,7 +115,7 @@ Module.register("EXT-FreeboxTV", {
   },
 
   socketNotificationReceived (notification, payload) {
-    switch(notification) {
+    switch (notification) {
       case "INITIALIZED":
         this.Channels = payload;
         var iterifyArr = function (arr) {
@@ -128,7 +128,7 @@ Module.register("EXT-FreeboxTV", {
           arr.prev = (current) => {
             var previous = current;
             previous = previous - 1;
-            if (previous < 0) return arr[arr.length-1];
+            if (previous < 0) return arr[arr.length - 1];
             return arr[previous];
           };
           return arr;
@@ -227,6 +227,7 @@ Module.register("EXT-FreeboxTV", {
   },
 
   initializeVolume () {
+
     /** convert volume **/
     try {
       let valueStart = null;
