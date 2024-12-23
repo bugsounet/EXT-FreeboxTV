@@ -36,7 +36,7 @@
     "node": ">=20"
   },
   "dependencies": {
-    "esbuild": "^0.24.0",
+    "esbuild": "^0.24.2",
     "glob": "^11.0.0",
     "vlc-client": "^1.1.1"
   },
